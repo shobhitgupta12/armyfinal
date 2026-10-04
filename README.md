@@ -75,7 +75,7 @@ Open your browser at `http://localhost:5173`.
 
 This simulator incorporates four offline, in-browser AI models to enhance training:
 
-1. **Threat Classifier (Machine Learning)**: A 10-tree Random Forest classifier running in-browser. Trained offline via scikit-learn on ~10,000 synthetic radar/RF signatures from the simulator, achieving 99.1% accuracy on a held-out test set. Provides trainees with a visual "AI Hint" to teach calibrated trust.
+1. **Threat Classifier (Machine Learning)**: A 10-tree Random Forest decision-support aid running in-browser. Trained offline via scikit-learn on ~10,000 simulator-generated tracks (8,000/2,000 split), achieving **98.8% accuracy on held-out synthetic data**. Provides trainees with a visual "AI Hint" to teach calibrated trust (Advisory only; not validated on real sensor data).
 2. **Bayesian Knowledge Tracing (BKT) Student Model**: Tracks trainee mastery across 4 sub-skills (detection, classification, engagement, efficiency) using probabilistic inference. Weakest skills automatically dictate the entity-mix of the next procedural scenario.
 3. **Adaptive Adversary (Pattern Recognition)**: The enemy learns. If a trainee relies on predictable tactics (e.g. 60%+ RF Jammer usage), the adversary adapts in real-time by spawning autonomous fiber-optic drones immune to jamming in the next wave.
 4. **Boids Swarm Emergence**: Hostile swarms do not follow scripted paths. They use Reynolds' Boids physics (separation, cohesion, alignment, goal-seek) to generate emergent, organic flocking behaviour.

@@ -7,14 +7,18 @@
  * training run (RandomForestClassifier, scikit-learn).
  *
  * A companion script `scripts/train_classifier.py` was used to:
- *   1. Generate ~10,000 synthetic labelled feature vectors by sampling the
+ *   1. Generate 10,000 synthetic labelled feature vectors by sampling the
  *      simulator's own parameter distributions for each entity class.
- *   2. Train a real scikit-learn RandomForestClassifier.
+ *   2. Train a real scikit-learn RandomForestClassifier (100 trees).
  *   3. Export the first 10 trees to JSON, which are now embedded below.
+ * 
+ * The full 100-tree model achieved 98.9% accuracy on the test set.
+ * The deployed 10-tree subset achieved 98.8% accuracy.
  *
- * It is now correct to claim on a slide:
- *   "Classifier trained on ~10,000 simulator-generated synthetic samples
- *    (stratified 80/20 train/test split). Accuracy on held-out test set: 99.1%."
+ * Suggested slide wording:
+ *   "Random-forest threat-ID aid, trained on ~10,000 simulator-generated 
+ *    tracks (8,000/2,000 split); 98.8% on held-out synthetic data. Not 
+ *    validated on real sensor data. Advisory only."
  *
  * Features per track (10 features, matches sensors.ts output):
  *   [0] estimatedSpeed          m/s
@@ -126,62 +130,52 @@ const FOREST: TreeNode[] = [
         "type": "split",
         "feature": 1,
         "featureName": "altitude",
-        "threshold": 53.90803,
+        "threshold": 53.73807,
         "left": {
-          "type": "leaf",
-          "label": "bird"
-        },
-        "right": {
           "type": "split",
           "feature": 2,
           "featureName": "rcs",
-          "threshold": 0.05079,
+          "threshold": 0.01267,
+          "left": {
+            "type": "leaf",
+            "label": "bird"
+          },
+          "right": {
+            "type": "leaf",
+            "label": "bird"
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 0,
+          "featureName": "speed",
+          "threshold": 20.36516,
           "left": {
             "type": "split",
-            "feature": 0,
-            "featureName": "speed",
-            "threshold": 19.67489,
+            "feature": 1,
+            "featureName": "altitude",
+            "threshold": 98.0801,
             "left": {
               "type": "split",
-              "feature": 1,
-              "featureName": "altitude",
-              "threshold": 92.00975,
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 18.48597,
               "left": {
                 "type": "leaf",
-                "label": "hostile_swarm"
+                "label": "hostile_recon"
               },
               "right": {
                 "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 95.35735,
+                "feature": 7,
+                "featureName": "acousticConf",
+                "threshold": 0.07867,
                 "left": {
                   "type": "leaf",
-                  "label": "hostile_recon"
+                  "label": "hostile_swarm"
                 },
                 "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 125.27525,
-                  "left": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 124.92815,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  }
+                  "type": "leaf",
+                  "label": "hostile_swarm"
                 }
               }
             },
@@ -189,161 +183,71 @@ const FOREST: TreeNode[] = [
               "type": "split",
               "feature": 0,
               "featureName": "speed",
-              "threshold": 30.712,
+              "threshold": 19.32807,
               "left": {
                 "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 21.4476,
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 104.95394,
                 "left": {
                   "type": "split",
-                  "feature": 5,
-                  "featureName": "rfStrength",
-                  "threshold": 52.14258,
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 18.04032,
                   "left": {
-                    "type": "split",
-                    "feature": 5,
-                    "featureName": "rfStrength",
-                    "threshold": 15.98033,
-                    "left": {
-                      "type": "split",
-                      "feature": 6,
-                      "featureName": "eoConf",
-                      "threshold": 0.2769,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.0445,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 5,
-                    "featureName": "rfStrength",
-                    "threshold": 79.74634,
-                    "left": {
-                      "type": "split",
-                      "feature": 1,
-                      "featureName": "altitude",
-                      "threshold": 105.31838,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 4,
-                  "featureName": "rfFreqBand",
-                  "threshold": 1.5,
-                  "left": {
-                    "type": "split",
-                    "feature": 3,
-                    "featureName": "rfPresent",
-                    "threshold": 0.5,
-                    "left": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.03786,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
+                    "type": "leaf",
+                    "label": "hostile_recon"
                   },
                   "right": {
                     "type": "leaf",
-                    "label": "hostile_swarm"
+                    "label": "hostile_recon"
                   }
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
                 }
               },
               "right": {
                 "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.03697,
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 15.17199,
                 "left": {
                   "type": "leaf",
                   "label": "hostile_swarm"
                 },
                 "right": {
                   "type": "split",
-                  "feature": 7,
-                  "featureName": "acousticConf",
-                  "threshold": 0.26698,
+                  "feature": 5,
+                  "featureName": "rfStrength",
+                  "threshold": 69.99314,
                   "left": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.23895,
-                    "left": {
-                      "type": "split",
-                      "feature": 5,
-                      "featureName": "rfStrength",
-                      "threshold": 86.87546,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
+                    "type": "leaf",
+                    "label": "hostile_recon"
                   },
                   "right": {
                     "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 31.5461,
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.35194,
                     "left": {
                       "type": "leaf",
-                      "label": "hostile_attack"
+                      "label": "hostile_swarm"
                     },
                     "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
+                      "type": "split",
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.03054,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      }
                     }
                   }
                 }
@@ -352,110 +256,36 @@ const FOREST: TreeNode[] = [
           },
           "right": {
             "type": "split",
-            "feature": 4,
-            "featureName": "rfFreqBand",
-            "threshold": 1.5,
+            "feature": 5,
+            "featureName": "rfStrength",
+            "threshold": 50.01003,
             "left": {
               "type": "split",
-              "feature": 4,
-              "featureName": "rfFreqBand",
-              "threshold": 0.5,
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.03946,
               "left": {
                 "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 121.94426,
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 15.31002,
                 "left": {
                   "type": "split",
                   "feature": 0,
                   "featureName": "speed",
-                  "threshold": 27.15178,
+                  "threshold": 29.09442,
                   "left": {
                     "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 25.52283,
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.03174,
                     "left": {
                       "type": "leaf",
                       "label": "hostile_swarm"
                     },
                     "right": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.57339,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 29.60626,
-                    "left": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.05518,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 6,
-                      "featureName": "eoConf",
-                      "threshold": 0.16354,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_recon"
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 129.16769,
-                "left": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.05201,
-                  "left": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.0518,
-                    "left": {
                       "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
+                      "label": "hostile_swarm"
                     }
                   },
                   "right": {
@@ -467,59 +297,203 @@ const FOREST: TreeNode[] = [
                   "type": "leaf",
                   "label": "hostile_recon"
                 }
+              },
+              "right": {
+                "type": "split",
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 28.4057,
+                "left": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.05866,
+                  "left": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 119.83372,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.03102,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 26.28201,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 9,
+                  "featureName": "distNorm",
+                  "threshold": 0.10338,
+                  "left": {
+                    "type": "split",
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.34311,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 1,
+                      "featureName": "altitude",
+                      "threshold": 67.69088,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 121.7979,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.64446,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 30.72445,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  }
+                }
               }
             },
             "right": {
               "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.05332,
+              "feature": 4,
+              "featureName": "rfFreqBand",
+              "threshold": 1.5,
               "left": {
                 "type": "split",
-                "feature": 5,
-                "featureName": "rfStrength",
-                "threshold": 51.52179,
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 126.76353,
                 "left": {
-                  "type": "leaf",
-                  "label": "hostile_recon"
-                },
-                "right": {
                   "type": "split",
-                  "feature": 6,
-                  "featureName": "eoConf",
-                  "threshold": 0.09428,
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.03845,
                   "left": {
                     "type": "leaf",
-                    "label": "hostile_swarm"
+                    "label": "hostile_attack"
                   },
                   "right": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
+                    "type": "split",
+                    "feature": 7,
+                    "featureName": "acousticConf",
+                    "threshold": 0.59361,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 1,
+                      "featureName": "altitude",
+                      "threshold": 107.4141,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
                   }
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
                 }
               },
               "right": {
                 "type": "split",
-                "feature": 6,
-                "featureName": "eoConf",
-                "threshold": 0.72101,
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 135.10786,
                 "left": {
-                  "type": "leaf",
-                  "label": "hostile_swarm"
-                },
-                "right": {
                   "type": "split",
-                  "feature": 6,
-                  "featureName": "eoConf",
-                  "threshold": 0.74065,
+                  "feature": 1,
+                  "featureName": "altitude",
+                  "threshold": 111.52238,
                   "left": {
                     "type": "leaf",
                     "label": "hostile_swarm"
                   },
                   "right": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 20.59081,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
                   }
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
                 }
               }
             }
@@ -540,7 +514,7 @@ const FOREST: TreeNode[] = [
     "type": "split",
     "feature": 5,
     "featureName": "rfStrength",
-    "threshold": 7.61219,
+    "threshold": 7.55858,
     "left": {
       "type": "split",
       "feature": 8,
@@ -550,77 +524,87 @@ const FOREST: TreeNode[] = [
         "type": "split",
         "feature": 9,
         "featureName": "distNorm",
-        "threshold": 0.06458,
+        "threshold": 0.27451,
         "left": {
           "type": "split",
           "feature": 1,
           "featureName": "altitude",
-          "threshold": 43.55298,
-          "left": {
-            "type": "leaf",
-            "label": "bird"
-          },
-          "right": {
-            "type": "leaf",
-            "label": "bird"
-          }
-        },
-        "right": {
-          "type": "split",
-          "feature": 7,
-          "featureName": "acousticConf",
-          "threshold": 0.00092,
+          "threshold": 55.87156,
           "left": {
             "type": "split",
-            "feature": 2,
-            "featureName": "rcs",
-            "threshold": 0.04261,
+            "feature": 7,
+            "featureName": "acousticConf",
+            "threshold": 0.06738,
             "left": {
-              "type": "leaf",
-              "label": "hostile_recon"
+              "type": "split",
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 44.04417,
+              "left": {
+                "type": "leaf",
+                "label": "bird"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "bird"
+              }
             },
             "right": {
               "type": "leaf",
-              "label": "hostile_recon"
+              "label": "bird"
             }
           },
           "right": {
             "type": "split",
             "feature": 2,
             "featureName": "rcs",
-            "threshold": 0.01614,
+            "threshold": 0.04564,
             "left": {
-              "type": "leaf",
-              "label": "bird"
-            },
-            "right": {
               "type": "split",
               "feature": 0,
               "featureName": "speed",
-              "threshold": 27.32798,
+              "threshold": 22.2466,
               "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              },
+              "right": {
                 "type": "split",
                 "feature": 1,
                 "featureName": "altitude",
-                "threshold": 98.58174,
+                "threshold": 87.78299,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                }
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 9,
+              "featureName": "distNorm",
+              "threshold": 0.09738,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_attack"
+              },
+              "right": {
+                "type": "split",
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 26.81118,
                 "left": {
                   "type": "split",
                   "feature": 9,
                   "featureName": "distNorm",
-                  "threshold": 0.39427,
+                  "threshold": 0.161,
                   "left": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.34553,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
+                    "type": "leaf",
+                    "label": "hostile_recon"
                   },
                   "right": {
                     "type": "leaf",
@@ -631,128 +615,198 @@ const FOREST: TreeNode[] = [
                   "type": "split",
                   "feature": 9,
                   "featureName": "distNorm",
-                  "threshold": 0.12345,
+                  "threshold": 0.1036,
                   "left": {
                     "type": "leaf",
-                    "label": "hostile_recon"
+                    "label": "hostile_attack"
                   },
                   "right": {
                     "type": "split",
                     "feature": 2,
                     "featureName": "rcs",
-                    "threshold": 0.04116,
+                    "threshold": 0.05446,
                     "left": {
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 32.76656,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 1,
+          "featureName": "altitude",
+          "threshold": 55.8879,
+          "left": {
+            "type": "split",
+            "feature": 2,
+            "featureName": "rcs",
+            "threshold": 0.01266,
+            "left": {
+              "type": "leaf",
+              "label": "bird"
+            },
+            "right": {
+              "type": "leaf",
+              "label": "bird"
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 27.06177,
+            "left": {
+              "type": "split",
+              "feature": 7,
+              "featureName": "acousticConf",
+              "threshold": 0.00447,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              },
+              "right": {
+                "type": "split",
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 19.51357,
+                "left": {
+                  "type": "split",
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 18.7816,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 7,
+                  "featureName": "acousticConf",
+                  "threshold": 0.20314,
+                  "left": {
+                    "type": "split",
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.20706,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
                       "type": "split",
                       "feature": 2,
                       "featureName": "rcs",
-                      "threshold": 0.03321,
+                      "threshold": 0.03519,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_recon"
                       },
                       "right": {
                         "type": "leaf",
-                        "label": "hostile_recon"
+                        "label": "hostile_swarm"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.03447,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
+                  }
+                }
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.03613,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_swarm"
+              },
+              "right": {
+                "type": "split",
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.3064,
+                "left": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.05786,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.05812,
+                  "left": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 28.58314,
+                    "left": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.74059,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
                       }
                     },
                     "right": {
                       "type": "split",
                       "feature": 0,
                       "featureName": "speed",
-                      "threshold": 20.10724,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  }
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 88.75789,
-                "left": {
-                  "type": "split",
-                  "feature": 0,
-                  "featureName": "speed",
-                  "threshold": 29.35497,
-                  "left": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 29.0663,
-                    "left": {
-                      "type": "split",
-                      "feature": 6,
-                      "featureName": "eoConf",
-                      "threshold": 0.45092,
+                      "threshold": 29.26273,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.04251,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 0,
-                  "featureName": "speed",
-                  "threshold": 29.17497,
-                  "left": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.47584,
-                    "left": {
-                      "type": "split",
-                      "feature": 6,
-                      "featureName": "eoConf",
-                      "threshold": 0.43852,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.04624,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
                       },
                       "right": {
                         "type": "leaf",
@@ -761,28 +815,8 @@ const FOREST: TreeNode[] = [
                     }
                   },
                   "right": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.03918,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.91855,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
+                    "type": "leaf",
+                    "label": "hostile_attack"
                   }
                 }
               }
@@ -797,295 +831,67 @@ const FOREST: TreeNode[] = [
     },
     "right": {
       "type": "split",
-      "feature": 4,
-      "featureName": "rfFreqBand",
-      "threshold": 2.5,
+      "feature": 2,
+      "featureName": "rcs",
+      "threshold": 0.08609,
       "left": {
         "type": "split",
-        "feature": 1,
-        "featureName": "altitude",
-        "threshold": 63.24501,
+        "feature": 0,
+        "featureName": "speed",
+        "threshold": 20.38113,
         "left": {
           "type": "split",
-          "feature": 5,
-          "featureName": "rfStrength",
-          "threshold": 60.18082,
+          "feature": 0,
+          "featureName": "speed",
+          "threshold": 12.26445,
           "left": {
             "type": "split",
-            "feature": 0,
-            "featureName": "speed",
-            "threshold": 17.5363,
+            "feature": 8,
+            "featureName": "iff",
+            "threshold": 0.5,
             "left": {
               "type": "leaf",
-              "label": "civilian"
+              "label": "hostile_recon"
             },
             "right": {
-              "type": "split",
-              "feature": 4,
-              "featureName": "rfFreqBand",
-              "threshold": 1.5,
-              "left": {
-                "type": "leaf",
-                "label": "hostile_attack"
-              },
-              "right": {
-                "type": "leaf",
-                "label": "hostile_swarm"
-              }
+              "type": "leaf",
+              "label": "civilian"
             }
           },
           "right": {
             "type": "split",
-            "feature": 7,
-            "featureName": "acousticConf",
-            "threshold": 0.33584,
+            "feature": 8,
+            "featureName": "iff",
+            "threshold": 0.5,
             "left": {
               "type": "split",
               "feature": 2,
               "featureName": "rcs",
-              "threshold": 0.04396,
-              "left": {
-                "type": "leaf",
-                "label": "hostile_swarm"
-              },
-              "right": {
-                "type": "split",
-                "feature": 7,
-                "featureName": "acousticConf",
-                "threshold": 0.23808,
-                "left": {
-                  "type": "split",
-                  "feature": 5,
-                  "featureName": "rfStrength",
-                  "threshold": 69.26189,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
-                }
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 29.84318,
-              "left": {
-                "type": "leaf",
-                "label": "hostile_swarm"
-              },
-              "right": {
-                "type": "leaf",
-                "label": "hostile_attack"
-              }
-            }
-          }
-        },
-        "right": {
-          "type": "split",
-          "feature": 5,
-          "featureName": "rfStrength",
-          "threshold": 79.75872,
-          "left": {
-            "type": "split",
-            "feature": 1,
-            "featureName": "altitude",
-            "threshold": 123.25659,
-            "left": {
-              "type": "split",
-              "feature": 4,
-              "featureName": "rfFreqBand",
-              "threshold": 1.5,
+              "threshold": 0.05285,
               "left": {
                 "type": "split",
                 "feature": 5,
                 "featureName": "rfStrength",
-                "threshold": 39.91893,
+                "threshold": 79.96496,
                 "left": {
                   "type": "split",
-                  "feature": 8,
-                  "featureName": "iff",
-                  "threshold": 0.5,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "civilian"
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 8,
-                  "featureName": "iff",
-                  "threshold": 0.5,
+                  "feature": 5,
+                  "featureName": "rfStrength",
+                  "threshold": 60.00295,
                   "left": {
                     "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.04244,
-                    "left": {
-                      "type": "split",
-                      "feature": 1,
-                      "featureName": "altitude",
-                      "threshold": 92.9217,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 1,
-                      "featureName": "altitude",
-                      "threshold": 99.53321,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "civilian"
-                  }
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 73.97805,
-                "left": {
-                  "type": "split",
-                  "feature": 8,
-                  "featureName": "iff",
-                  "threshold": 0.5,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "civilian"
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 101.40874,
-                  "left": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.38839,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 18.46505,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.03041,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 20.17814,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 19.9046,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.05406,
-              "left": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 20.20546,
-                "left": {
-                  "type": "leaf",
-                  "label": "hostile_recon"
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 6,
-                  "featureName": "eoConf",
-                  "threshold": 0.73834,
-                  "left": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.17017,
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 98.69281,
                     "left": {
                       "type": "leaf",
                       "label": "hostile_recon"
                     },
                     "right": {
                       "type": "split",
-                      "feature": 5,
-                      "featureName": "rfStrength",
-                      "threshold": 63.70006,
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.02544,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_recon"
@@ -1097,39 +903,109 @@ const FOREST: TreeNode[] = [
                     }
                   },
                   "right": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 98.00587,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.98216,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      }
+                    }
                   }
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
                 }
               },
               "right": {
                 "type": "leaf",
-                "label": "hostile_attack"
+                "label": "hostile_swarm"
               }
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 7,
-            "featureName": "acousticConf",
-            "threshold": 0.00434,
-            "left": {
-              "type": "leaf",
-              "label": "hostile_recon"
             },
             "right": {
+              "type": "split",
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 69.86988,
+              "left": {
+                "type": "leaf",
+                "label": "civilian"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "civilian"
+              }
+            }
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 1,
+          "featureName": "altitude",
+          "threshold": 135.10786,
+          "left": {
+            "type": "split",
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 30.02208,
+            "left": {
               "type": "split",
               "feature": 4,
               "featureName": "rfFreqBand",
               "threshold": 1.5,
               "left": {
                 "type": "split",
-                "feature": 5,
-                "featureName": "rfStrength",
-                "threshold": 80.58066,
+                "feature": 6,
+                "featureName": "eoConf",
+                "threshold": 0.47395,
                 "left": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
+                  "type": "split",
+                  "feature": 7,
+                  "featureName": "acousticConf",
+                  "threshold": 0.2965,
+                  "left": {
+                    "type": "split",
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.30265,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 27.69752,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
+                  }
                 },
                 "right": {
                   "type": "leaf",
@@ -1137,10 +1013,88 @@ const FOREST: TreeNode[] = [
                 }
               },
               "right": {
-                "type": "leaf",
-                "label": "hostile_swarm"
+                "type": "split",
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 50.25686,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.03105,
+                  "left": {
+                    "type": "split",
+                    "feature": 7,
+                    "featureName": "acousticConf",
+                    "threshold": 0.52022,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  }
+                }
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.03697,
+              "left": {
+                "type": "split",
+                "feature": 6,
+                "featureName": "eoConf",
+                "threshold": 0.44757,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 94.65697,
+                "left": {
+                  "type": "split",
+                  "feature": 4,
+                  "featureName": "rfFreqBand",
+                  "threshold": 1.5,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  }
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                }
               }
             }
+          },
+          "right": {
+            "type": "leaf",
+            "label": "hostile_recon"
           }
         }
       },
@@ -1154,22 +1108,22 @@ const FOREST: TreeNode[] = [
     "type": "split",
     "feature": 2,
     "featureName": "rcs",
-    "threshold": 0.08476,
+    "threshold": 0.08492,
     "left": {
       "type": "split",
       "feature": 1,
       "featureName": "altitude",
-      "threshold": 63.35355,
+      "threshold": 58.97859,
       "left": {
         "type": "split",
         "feature": 0,
         "featureName": "speed",
-        "threshold": 10.08323,
+        "threshold": 9.88591,
         "left": {
           "type": "split",
-          "feature": 3,
-          "featureName": "rfPresent",
-          "threshold": 0.5,
+          "feature": 2,
+          "featureName": "rcs",
+          "threshold": 0.01279,
           "left": {
             "type": "split",
             "feature": 8,
@@ -1185,8 +1139,28 @@ const FOREST: TreeNode[] = [
             }
           },
           "right": {
-            "type": "leaf",
-            "label": "civilian"
+            "type": "split",
+            "feature": 1,
+            "featureName": "altitude",
+            "threshold": 27.22966,
+            "left": {
+              "type": "split",
+              "feature": 6,
+              "featureName": "eoConf",
+              "threshold": 0.22111,
+              "left": {
+                "type": "leaf",
+                "label": "civilian"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "civilian"
+              }
+            },
+            "right": {
+              "type": "leaf",
+              "label": "civilian"
+            }
           }
         },
         "right": {
@@ -1198,44 +1172,34 @@ const FOREST: TreeNode[] = [
             "type": "split",
             "feature": 4,
             "featureName": "rfFreqBand",
-            "threshold": 1.5,
+            "threshold": 0.5,
             "left": {
               "type": "split",
               "feature": 0,
               "featureName": "speed",
-              "threshold": 26.89884,
+              "threshold": 10.60196,
               "left": {
-                "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.02153,
-                "left": {
-                  "type": "leaf",
-                  "label": "bird"
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_swarm"
-                }
+                "type": "leaf",
+                "label": "bird"
               },
               "right": {
-                "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.05054,
-                "left": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
-                }
+                "type": "leaf",
+                "label": "hostile_attack"
               }
             },
             "right": {
-              "type": "leaf",
-              "label": "hostile_swarm"
+              "type": "split",
+              "feature": 5,
+              "featureName": "rfStrength",
+              "threshold": 77.15624,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_attack"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_swarm"
+              }
             }
           },
           "right": {
@@ -1246,584 +1210,374 @@ const FOREST: TreeNode[] = [
       },
       "right": {
         "type": "split",
-        "feature": 1,
-        "featureName": "altitude",
-        "threshold": 123.03817,
+        "feature": 4,
+        "featureName": "rfFreqBand",
+        "threshold": 1.5,
         "left": {
           "type": "split",
-          "feature": 0,
-          "featureName": "speed",
-          "threshold": 29.4861,
+          "feature": 1,
+          "featureName": "altitude",
+          "threshold": 127.06923,
           "left": {
             "type": "split",
-            "feature": 0,
-            "featureName": "speed",
-            "threshold": 18.81001,
+            "feature": 8,
+            "featureName": "iff",
+            "threshold": 0.5,
             "left": {
               "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.0259,
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 26.93318,
               "left": {
                 "type": "split",
-                "feature": 5,
-                "featureName": "rfStrength",
-                "threshold": 60.576,
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 19.69889,
                 "left": {
                   "type": "split",
                   "feature": 0,
                   "featureName": "speed",
-                  "threshold": 13.82688,
+                  "threshold": 18.48873,
                   "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
                     "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.02302,
+                    "feature": 5,
+                    "featureName": "rfStrength",
+                    "threshold": 15.5065,
                     "left": {
                       "type": "split",
-                      "feature": 3,
-                      "featureName": "rfPresent",
-                      "threshold": 0.5,
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.39,
                       "left": {
                         "type": "leaf",
-                        "label": "civilian"
+                        "label": "hostile_swarm"
                       },
                       "right": {
                         "type": "leaf",
-                        "label": "civilian"
+                        "label": "hostile_recon"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.06118,
+                  "left": {
+                    "type": "split",
+                    "feature": 5,
+                    "featureName": "rfStrength",
+                    "threshold": 22.45722,
+                    "left": {
+                      "type": "split",
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.04789,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
                       }
                     },
                     "right": {
                       "type": "split",
                       "feature": 6,
                       "featureName": "eoConf",
-                      "threshold": 0.41854,
+                      "threshold": 0.43436,
                       "left": {
                         "type": "leaf",
-                        "label": "civilian"
+                        "label": "hostile_recon"
                       },
                       "right": {
                         "type": "leaf",
-                        "label": "civilian"
+                        "label": "hostile_attack"
                       }
                     }
                   },
                   "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 4,
+                "featureName": "rfFreqBand",
+                "threshold": 0.5,
+                "left": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.03824,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  },
+                  "right": {
                     "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 85.94714,
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.76424,
                     "left": {
-                      "type": "leaf",
-                      "label": "civilian"
+                      "type": "split",
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.13931,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
                     },
                     "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.33284,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
                     }
                   }
                 },
                 "right": {
                   "type": "leaf",
-                  "label": "hostile_recon"
+                  "label": "hostile_attack"
                 }
-              },
-              "right": {
+              }
+            },
+            "right": {
+              "type": "leaf",
+              "label": "civilian"
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 7,
+            "featureName": "acousticConf",
+            "threshold": 0.69517,
+            "left": {
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.05162,
+              "left": {
                 "type": "split",
-                "feature": 5,
-                "featureName": "rfStrength",
-                "threshold": 28.52051,
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 128.64947,
                 "left": {
                   "type": "split",
-                  "feature": 8,
-                  "featureName": "iff",
-                  "threshold": 0.5,
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.04025,
                   "left": {
                     "type": "leaf",
                     "label": "hostile_recon"
                   },
                   "right": {
                     "type": "leaf",
-                    "label": "civilian"
+                    "label": "hostile_recon"
                   }
                 },
                 "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 86.9442,
-                  "left": {
-                    "type": "leaf",
-                    "label": "civilian"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.09829,
-                    "left": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.32763,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    }
-                  }
-                }
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 7,
-              "featureName": "acousticConf",
-              "threshold": 0.37385,
-              "left": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 27.59777,
-                "left": {
-                  "type": "split",
-                  "feature": 4,
-                  "featureName": "rfFreqBand",
-                  "threshold": 1.5,
-                  "left": {
-                    "type": "split",
-                    "feature": 4,
-                    "featureName": "rfFreqBand",
-                    "threshold": 0.5,
-                    "left": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.90729,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 5,
-                      "featureName": "rfStrength",
-                      "threshold": 63.76878,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 109.07813,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 5,
-                      "featureName": "rfStrength",
-                      "threshold": 54.81263,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 5,
-                  "featureName": "rfStrength",
-                  "threshold": 56.15128,
-                  "left": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.05034,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.19539,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 95.86766,
-                    "left": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.36018,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.1044,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  }
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.06411,
-                "left": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 103.70592,
-                  "left": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 27.32583,
-                    "left": {
-                      "type": "split",
-                      "feature": 4,
-                      "featureName": "rfFreqBand",
-                      "threshold": 1.5,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 4,
-                      "featureName": "rfFreqBand",
-                      "threshold": 1.5,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.02895,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.47369,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 7,
-                  "featureName": "acousticConf",
-                  "threshold": 0.50347,
-                  "left": {
-                    "type": "split",
-                    "feature": 5,
-                    "featureName": "rfStrength",
-                    "threshold": 58.89459,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                }
-              }
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 0,
-            "featureName": "speed",
-            "threshold": 31.48248,
-            "left": {
-              "type": "split",
-              "feature": 4,
-              "featureName": "rfFreqBand",
-              "threshold": 1.5,
-              "left": {
-                "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.04069,
-                "left": {
                   "type": "leaf",
-                  "label": "hostile_swarm"
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 5,
-                  "featureName": "rfStrength",
-                  "threshold": 20.44632,
-                  "left": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 31.11417,
-                    "left": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.41175,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
+                  "label": "hostile_recon"
                 }
               },
               "right": {
                 "type": "leaf",
-                "label": "hostile_swarm"
+                "label": "hostile_recon"
               }
             },
             "right": {
-              "type": "split",
-              "feature": 3,
-              "featureName": "rfPresent",
-              "threshold": 0.5,
-              "left": {
-                "type": "leaf",
-                "label": "hostile_attack"
-              },
-              "right": {
-                "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.03833,
-                "left": {
-                  "type": "leaf",
-                  "label": "hostile_swarm"
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 77.98161,
-                  "left": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 77.24691,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 34.12831,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                }
-              }
+              "type": "leaf",
+              "label": "hostile_recon"
             }
           }
         },
         "right": {
           "type": "split",
-          "feature": 1,
-          "featureName": "altitude",
-          "threshold": 127.67534,
+          "feature": 6,
+          "featureName": "eoConf",
+          "threshold": 0.88068,
           "left": {
             "type": "split",
-            "feature": 5,
-            "featureName": "rfStrength",
-            "threshold": 62.87013,
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 20.11339,
             "left": {
               "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.0583,
+              "feature": 5,
+              "featureName": "rfStrength",
+              "threshold": 29.95524,
               "left": {
+                "type": "leaf",
+                "label": "civilian"
+              },
+              "right": {
                 "type": "split",
-                "feature": 3,
-                "featureName": "rfPresent",
-                "threshold": 0.5,
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 79.96496,
                 "left": {
-                  "type": "leaf",
-                  "label": "hostile_recon"
+                  "type": "split",
+                  "feature": 6,
+                  "featureName": "eoConf",
+                  "threshold": 0.75775,
+                  "left": {
+                    "type": "split",
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.01832,
+                    "left": {
+                      "type": "leaf",
+                      "label": "civilian"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 5,
+                      "featureName": "rfStrength",
+                      "threshold": 44.57526,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 11.06149,
+                    "left": {
+                      "type": "leaf",
+                      "label": "civilian"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.80078,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      }
+                    }
+                  }
                 },
                 "right": {
                   "type": "leaf",
-                  "label": "hostile_recon"
+                  "label": "hostile_swarm"
                 }
-              },
-              "right": {
-                "type": "leaf",
-                "label": "hostile_attack"
               }
             },
             "right": {
               "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 18.07968,
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 135.10786,
               "left": {
-                "type": "leaf",
-                "label": "hostile_recon"
-              },
-              "right": {
                 "type": "split",
-                "feature": 6,
-                "featureName": "eoConf",
-                "threshold": 0.5447,
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 50.37835,
                 "left": {
                   "type": "leaf",
                   "label": "hostile_swarm"
                 },
                 "right": {
                   "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.70083,
+                  "feature": 1,
+                  "featureName": "altitude",
+                  "threshold": 111.52238,
                   "left": {
                     "type": "leaf",
                     "label": "hostile_swarm"
                   },
                   "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
+                    "type": "split",
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.0312,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
                   }
                 }
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_recon"
               }
             }
           },
           "right": {
             "type": "split",
-            "feature": 8,
-            "featureName": "iff",
-            "threshold": 1.0,
+            "feature": 1,
+            "featureName": "altitude",
+            "threshold": 127.89048,
             "left": {
               "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 22.05342,
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 72.78102,
               "left": {
                 "type": "leaf",
-                "label": "hostile_recon"
+                "label": "hostile_swarm"
               },
               "right": {
-                "type": "leaf",
-                "label": "hostile_swarm"
+                "type": "split",
+                "feature": 6,
+                "featureName": "eoConf",
+                "threshold": 0.88954,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                }
               }
             },
             "right": {
               "type": "leaf",
-              "label": "friendly"
+              "label": "hostile_recon"
             }
           }
         }
@@ -1833,7 +1587,7 @@ const FOREST: TreeNode[] = [
       "type": "split",
       "feature": 0,
       "featureName": "speed",
-      "threshold": 28.27608,
+      "threshold": 27.6079,
       "left": {
         "type": "leaf",
         "label": "friendly"
@@ -1858,20 +1612,40 @@ const FOREST: TreeNode[] = [
         "type": "split",
         "feature": 2,
         "featureName": "rcs",
-        "threshold": 0.01286,
+        "threshold": 0.01318,
         "left": {
           "type": "split",
           "feature": 6,
           "featureName": "eoConf",
-          "threshold": 0.02068,
+          "threshold": 0.16499,
           "left": {
             "type": "split",
-            "feature": 6,
-            "featureName": "eoConf",
-            "threshold": 0.0161,
+            "feature": 1,
+            "featureName": "altitude",
+            "threshold": 48.87927,
             "left": {
-              "type": "leaf",
-              "label": "bird"
+              "type": "split",
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 41.49318,
+              "left": {
+                "type": "leaf",
+                "label": "bird"
+              },
+              "right": {
+                "type": "split",
+                "feature": 2,
+                "featureName": "rcs",
+                "threshold": 0.01122,
+                "left": {
+                  "type": "leaf",
+                  "label": "bird"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "bird"
+                }
+              }
             },
             "right": {
               "type": "leaf",
@@ -1880,92 +1654,12 @@ const FOREST: TreeNode[] = [
           },
           "right": {
             "type": "split",
-            "feature": 1,
-            "featureName": "altitude",
-            "threshold": 54.66618,
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 10.52993,
             "left": {
-              "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.01125,
-              "left": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 5.66177,
-                "left": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.01043,
-                  "left": {
-                    "type": "leaf",
-                    "label": "bird"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 5.3706,
-                    "left": {
-                      "type": "leaf",
-                      "label": "bird"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "bird"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "bird"
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 6,
-                "featureName": "eoConf",
-                "threshold": 0.06433,
-                "left": {
-                  "type": "leaf",
-                  "label": "bird"
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 31.18852,
-                  "left": {
-                    "type": "leaf",
-                    "label": "bird"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.38017,
-                    "left": {
-                      "type": "leaf",
-                      "label": "bird"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 6,
-                      "featureName": "eoConf",
-                      "threshold": 0.46208,
-                      "left": {
-                        "type": "leaf",
-                        "label": "bird"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "bird"
-                      }
-                    }
-                  }
-                }
-              }
+              "type": "leaf",
+              "label": "bird"
             },
             "right": {
               "type": "leaf",
@@ -1975,105 +1669,31 @@ const FOREST: TreeNode[] = [
         },
         "right": {
           "type": "split",
-          "feature": 7,
-          "featureName": "acousticConf",
-          "threshold": 0.00253,
+          "feature": 2,
+          "featureName": "rcs",
+          "threshold": 0.03903,
           "left": {
             "type": "split",
-            "feature": 1,
-            "featureName": "altitude",
-            "threshold": 182.46809,
-            "left": {
-              "type": "leaf",
-              "label": "hostile_recon"
-            },
-            "right": {
-              "type": "leaf",
-              "label": "hostile_recon"
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 2,
-            "featureName": "rcs",
-            "threshold": 0.04018,
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 13.14887,
             "left": {
               "type": "split",
-              "feature": 8,
-              "featureName": "iff",
-              "threshold": 0.5,
+              "feature": 6,
+              "featureName": "eoConf",
+              "threshold": 0.78972,
               "left": {
                 "type": "split",
                 "feature": 1,
                 "featureName": "altitude",
-                "threshold": 123.17088,
+                "threshold": 68.80801,
                 "left": {
-                  "type": "split",
-                  "feature": 0,
-                  "featureName": "speed",
-                  "threshold": 18.81507,
-                  "left": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 102.18267,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.3522,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 26.89195,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.03896,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  }
+                  "type": "leaf",
+                  "label": "civilian"
                 },
                 "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 129.40111,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  }
+                  "type": "leaf",
+                  "label": "civilian"
                 }
               },
               "right": {
@@ -2083,121 +1703,191 @@ const FOREST: TreeNode[] = [
             },
             "right": {
               "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 27.87543,
+              "feature": 9,
+              "featureName": "distNorm",
+              "threshold": 0.23704,
               "left": {
                 "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.06098,
+                "feature": 7,
+                "featureName": "acousticConf",
+                "threshold": 0.10627,
                 "left": {
-                  "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.74089,
-                  "left": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 118.63465,
-                    "left": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.37016,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.04501,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 109.36134,
-                    "left": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.04469,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  }
+                  "type": "leaf",
+                  "label": "hostile_recon"
                 },
                 "right": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
+                  "type": "split",
+                  "feature": 7,
+                  "featureName": "acousticConf",
+                  "threshold": 0.60039,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  }
                 }
               },
               "right": {
                 "type": "split",
-                "feature": 7,
-                "featureName": "acousticConf",
-                "threshold": 0.0224,
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 20.36734,
                 "left": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
-                },
-                "right": {
                   "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.56052,
+                  "feature": 7,
+                  "featureName": "acousticConf",
+                  "threshold": 0.23211,
                   "left": {
                     "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 28.25656,
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 109.04112,
                     "left": {
                       "type": "leaf",
-                      "label": "hostile_attack"
+                      "label": "hostile_recon"
                     },
                     "right": {
                       "type": "leaf",
-                      "label": "hostile_attack"
+                      "label": "hostile_recon"
                     }
                   },
                   "right": {
                     "type": "split",
                     "feature": 1,
                     "featureName": "altitude",
-                    "threshold": 81.49714,
+                    "threshold": 96.70836,
                     "left": {
                       "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.43413,
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.46926,
+                      "left": {
+                        "type": "leaf",
+                        "label": "civilian"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "civilian"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.03158,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 27.8435,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  }
+                }
+              }
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 7,
+            "featureName": "acousticConf",
+            "threshold": 0.00447,
+            "left": {
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.04478,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 7,
+              "featureName": "acousticConf",
+              "threshold": 0.42095,
+              "left": {
+                "type": "split",
+                "feature": 2,
+                "featureName": "rcs",
+                "threshold": 0.05832,
+                "left": {
+                  "type": "split",
+                  "feature": 6,
+                  "featureName": "eoConf",
+                  "threshold": 0.6811,
+                  "left": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 113.26788,
+                    "left": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.17519,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.25902,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.69674,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.74382,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_attack"
@@ -2206,12 +1896,28 @@ const FOREST: TreeNode[] = [
                         "type": "leaf",
                         "label": "hostile_attack"
                       }
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 6,
+                  "featureName": "eoConf",
+                  "threshold": 0.72943,
+                  "left": {
+                    "type": "split",
+                    "feature": 9,
+                    "featureName": "distNorm",
+                    "threshold": 0.28561,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
                     },
                     "right": {
                       "type": "split",
                       "feature": 1,
                       "featureName": "altitude",
-                      "threshold": 95.05804,
+                      "threshold": 66.85933,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_attack"
@@ -2220,6 +1926,144 @@ const FOREST: TreeNode[] = [
                         "type": "leaf",
                         "label": "hostile_attack"
                       }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 9,
+                    "featureName": "distNorm",
+                    "threshold": 0.40872,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.31433,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.81548,
+                "left": {
+                  "type": "split",
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 28.34714,
+                  "left": {
+                    "type": "split",
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.63409,
+                    "left": {
+                      "type": "split",
+                      "feature": 1,
+                      "featureName": "altitude",
+                      "threshold": 124.65718,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.46186,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 33.12383,
+                    "left": {
+                      "type": "split",
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.65524,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 9,
+                  "featureName": "distNorm",
+                  "threshold": 0.93478,
+                  "left": {
+                    "type": "split",
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.18783,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 28.33867,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 9,
+                    "featureName": "distNorm",
+                    "threshold": 0.97214,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
                     }
                   }
                 }
@@ -2230,56 +2074,166 @@ const FOREST: TreeNode[] = [
       },
       "right": {
         "type": "split",
-        "feature": 8,
-        "featureName": "iff",
-        "threshold": 0.5,
+        "feature": 1,
+        "featureName": "altitude",
+        "threshold": 122.60181,
         "left": {
           "type": "split",
-          "feature": 0,
-          "featureName": "speed",
-          "threshold": 19.58176,
+          "feature": 2,
+          "featureName": "rcs",
+          "threshold": 0.03004,
           "left": {
             "type": "split",
-            "feature": 4,
-            "featureName": "rfFreqBand",
-            "threshold": 1.5,
+            "feature": 8,
+            "featureName": "iff",
+            "threshold": 0.5,
             "left": {
-              "type": "leaf",
-              "label": "hostile_recon"
-            },
-            "right": {
               "type": "split",
-              "feature": 7,
-              "featureName": "acousticConf",
-              "threshold": 0.08639,
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.02867,
               "left": {
-                "type": "leaf",
-                "label": "hostile_recon"
-              },
-              "right": {
                 "type": "split",
                 "feature": 1,
                 "featureName": "altitude",
-                "threshold": 92.54033,
+                "threshold": 100.78767,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 2,
+                "featureName": "rcs",
+                "threshold": 0.02926,
                 "left": {
                   "type": "leaf",
                   "label": "hostile_swarm"
                 },
                 "right": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                }
+              }
+            },
+            "right": {
+              "type": "leaf",
+              "label": "civilian"
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 29.81136,
+            "left": {
+              "type": "split",
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 98.94325,
+              "left": {
+                "type": "split",
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 18.08085,
+                "left": {
+                  "type": "split",
+                  "feature": 8,
+                  "featureName": "iff",
+                  "threshold": 0.5,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "civilian"
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 5,
+                  "featureName": "rfStrength",
+                  "threshold": 48.82021,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 28.06575,
+                    "left": {
+                      "type": "split",
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.06444,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 1,
+                      "featureName": "altitude",
+                      "threshold": 96.52477,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 20.32454,
+                "left": {
                   "type": "split",
                   "feature": 1,
                   "featureName": "altitude",
-                  "threshold": 125.27525,
+                  "threshold": 101.61257,
                   "left": {
                     "type": "split",
-                    "feature": 5,
-                    "featureName": "rfStrength",
-                    "threshold": 77.73026,
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.45047,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.05049,
                     "left": {
                       "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.14871,
+                      "feature": 5,
+                      "featureName": "rfStrength",
+                      "threshold": 74.67431,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_recon"
@@ -2293,57 +2247,195 @@ const FOREST: TreeNode[] = [
                       "type": "leaf",
                       "label": "hostile_swarm"
                     }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 9,
+                  "featureName": "distNorm",
+                  "threshold": 0.07377,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
                   },
                   "right": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 28.46535,
+                    "left": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.5781,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 1,
+                      "featureName": "altitude",
+                      "threshold": 110.28643,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
                   }
                 }
-              }
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 5,
-            "featureName": "rfStrength",
-            "threshold": 49.99871,
-            "left": {
-              "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 24.40121,
-              "left": {
-                "type": "leaf",
-                "label": "hostile_recon"
-              },
-              "right": {
-                "type": "leaf",
-                "label": "hostile_attack"
               }
             },
             "right": {
               "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.06236,
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 31.82686,
               "left": {
                 "type": "split",
-                "feature": 4,
-                "featureName": "rfFreqBand",
-                "threshold": 1.5,
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.42792,
                 "left": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.03873,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 95.02981,
+                    "left": {
+                      "type": "split",
+                      "feature": 5,
+                      "featureName": "rfStrength",
+                      "threshold": 64.15616,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.3674,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  }
+                },
+                "right": {
                   "type": "split",
                   "feature": 5,
                   "featureName": "rfStrength",
-                  "threshold": 79.42741,
+                  "threshold": 53.19971,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 68.07325,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.63216,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 84.75561,
+                "left": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.0394,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 82.92374,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 36.11905,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 32.62409,
                   "left": {
                     "type": "split",
                     "feature": 0,
                     "featureName": "speed",
-                    "threshold": 24.2222,
+                    "threshold": 32.34838,
                     "left": {
                       "type": "leaf",
-                      "label": "hostile_recon"
+                      "label": "hostile_attack"
                     },
                     "right": {
                       "type": "leaf",
@@ -2354,62 +2446,58 @@ const FOREST: TreeNode[] = [
                     "type": "leaf",
                     "label": "hostile_attack"
                   }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 7,
-                  "featureName": "acousticConf",
-                  "threshold": 0.00291,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.02958,
-                    "left": {
-                      "type": "split",
-                      "feature": 5,
-                      "featureName": "rfStrength",
-                      "threshold": 69.72632,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 20.90848,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  }
                 }
+              }
+            }
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 5,
+          "featureName": "rfStrength",
+          "threshold": 79.91072,
+          "left": {
+            "type": "split",
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 22.6102,
+            "left": {
+              "type": "split",
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 21.09749,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 6,
+              "featureName": "eoConf",
+              "threshold": 0.25575,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_attack"
               },
               "right": {
                 "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 27.1257,
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 56.60946,
                 "left": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                },
+                "right": {
                   "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.06582,
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 27.99568,
                   "left": {
                     "type": "leaf",
                     "label": "hostile_swarm"
@@ -2418,18 +2506,14 @@ const FOREST: TreeNode[] = [
                     "type": "leaf",
                     "label": "hostile_attack"
                   }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
                 }
               }
             }
+          },
+          "right": {
+            "type": "leaf",
+            "label": "hostile_swarm"
           }
-        },
-        "right": {
-          "type": "leaf",
-          "label": "civilian"
         }
       }
     },
@@ -2442,182 +2526,18 @@ const FOREST: TreeNode[] = [
     "type": "split",
     "feature": 1,
     "featureName": "altitude",
-    "threshold": 61.85824,
+    "threshold": 124.22181,
     "left": {
       "type": "split",
-      "feature": 3,
-      "featureName": "rfPresent",
-      "threshold": 0.5,
+      "feature": 2,
+      "featureName": "rcs",
+      "threshold": 0.02975,
       "left": {
         "type": "split",
-        "feature": 6,
-        "featureName": "eoConf",
-        "threshold": 0.80606,
+        "feature": 3,
+        "featureName": "rfPresent",
+        "threshold": 0.5,
         "left": {
-          "type": "split",
-          "feature": 9,
-          "featureName": "distNorm",
-          "threshold": 0.21045,
-          "left": {
-            "type": "split",
-            "feature": 7,
-            "featureName": "acousticConf",
-            "threshold": 0.62462,
-            "left": {
-              "type": "split",
-              "feature": 7,
-              "featureName": "acousticConf",
-              "threshold": 0.54268,
-              "left": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 50.33832,
-                "left": {
-                  "type": "leaf",
-                  "label": "bird"
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "bird"
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 7,
-                "featureName": "acousticConf",
-                "threshold": 0.56378,
-                "left": {
-                  "type": "leaf",
-                  "label": "bird"
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "bird"
-                }
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 1,
-              "featureName": "altitude",
-              "threshold": 29.99783,
-              "left": {
-                "type": "leaf",
-                "label": "bird"
-              },
-              "right": {
-                "type": "leaf",
-                "label": "bird"
-              }
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 1,
-            "featureName": "altitude",
-            "threshold": 53.77045,
-            "left": {
-              "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 10.88944,
-              "left": {
-                "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.01293,
-                "left": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 41.18894,
-                  "left": {
-                    "type": "leaf",
-                    "label": "bird"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.02454,
-                    "left": {
-                      "type": "leaf",
-                      "label": "bird"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 8.81887,
-                      "left": {
-                        "type": "leaf",
-                        "label": "bird"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "bird"
-                      }
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.014,
-                  "left": {
-                    "type": "leaf",
-                    "label": "civilian"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "civilian"
-                  }
-                }
-              },
-              "right": {
-                "type": "leaf",
-                "label": "civilian"
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.02848,
-              "left": {
-                "type": "split",
-                "feature": 7,
-                "featureName": "acousticConf",
-                "threshold": 0.28284,
-                "left": {
-                  "type": "leaf",
-                  "label": "civilian"
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "civilian"
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 30.0087,
-                "left": {
-                  "type": "leaf",
-                  "label": "hostile_swarm"
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
-                }
-              }
-            }
-          }
-        },
-        "right": {
           "type": "split",
           "feature": 8,
           "featureName": "iff",
@@ -2626,44 +2546,24 @@ const FOREST: TreeNode[] = [
             "type": "split",
             "feature": 2,
             "featureName": "rcs",
-            "threshold": 0.01163,
+            "threshold": 0.01609,
             "left": {
               "type": "leaf",
               "label": "bird"
             },
             "right": {
-              "type": "leaf",
-              "label": "hostile_attack"
-            }
-          },
-          "right": {
-            "type": "leaf",
-            "label": "civilian"
-          }
-        }
-      },
-      "right": {
-        "type": "split",
-        "feature": 5,
-        "featureName": "rfStrength",
-        "threshold": 60.05681,
-        "left": {
-          "type": "split",
-          "feature": 9,
-          "featureName": "distNorm",
-          "threshold": 0.98977,
-          "left": {
-            "type": "split",
-            "feature": 0,
-            "featureName": "speed",
-            "threshold": 18.68033,
-            "left": {
-              "type": "leaf",
-              "label": "civilian"
-            },
-            "right": {
-              "type": "leaf",
-              "label": "hostile_swarm"
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.0278,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_swarm"
+              }
             }
           },
           "right": {
@@ -2673,120 +2573,144 @@ const FOREST: TreeNode[] = [
         },
         "right": {
           "type": "split",
-          "feature": 0,
-          "featureName": "speed",
-          "threshold": 29.19362,
+          "feature": 1,
+          "featureName": "altitude",
+          "threshold": 80.06614,
           "left": {
             "type": "split",
-            "feature": 0,
-            "featureName": "speed",
-            "threshold": 25.79682,
+            "feature": 5,
+            "featureName": "rfStrength",
+            "threshold": 59.67406,
+            "left": {
+              "type": "leaf",
+              "label": "civilian"
+            },
+            "right": {
+              "type": "leaf",
+              "label": "civilian"
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 7,
+            "featureName": "acousticConf",
+            "threshold": 0.13612,
             "left": {
               "type": "leaf",
               "label": "hostile_swarm"
             },
             "right": {
-              "type": "leaf",
-              "label": "hostile_swarm"
+              "type": "split",
+              "feature": 7,
+              "featureName": "acousticConf",
+              "threshold": 0.4113,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              },
+              "right": {
+                "type": "split",
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 67.53269,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                }
+              }
             }
-          },
-          "right": {
-            "type": "leaf",
-            "label": "hostile_attack"
           }
         }
-      }
-    },
-    "right": {
-      "type": "split",
-      "feature": 8,
-      "featureName": "iff",
-      "threshold": 0.5,
-      "left": {
+      },
+      "right": {
         "type": "split",
         "feature": 4,
         "featureName": "rfFreqBand",
         "threshold": 1.5,
         "left": {
           "type": "split",
-          "feature": 7,
-          "featureName": "acousticConf",
-          "threshold": 0.0001,
+          "feature": 5,
+          "featureName": "rfStrength",
+          "threshold": 39.67448,
           "left": {
-            "type": "leaf",
-            "label": "hostile_recon"
-          },
-          "right": {
             "type": "split",
-            "feature": 1,
-            "featureName": "altitude",
-            "threshold": 127.93483,
+            "feature": 4,
+            "featureName": "rfFreqBand",
+            "threshold": 0.5,
             "left": {
               "type": "split",
-              "feature": 5,
-              "featureName": "rfStrength",
-              "threshold": 39.98236,
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 54.26797,
               "left": {
+                "type": "leaf",
+                "label": "civilian"
+              },
+              "right": {
                 "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 101.97442,
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 28.4057,
                 "left": {
                   "type": "split",
                   "feature": 2,
                   "featureName": "rcs",
-                  "threshold": 0.0383,
+                  "threshold": 0.06018,
                   "left": {
                     "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.68387,
+                    "feature": 9,
+                    "featureName": "distNorm",
+                    "threshold": 0.74059,
+                    "left": {
+                      "type": "split",
+                      "feature": 1,
+                      "featureName": "altitude",
+                      "threshold": 98.31169,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.82821,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 26.28201,
                     "left": {
                       "type": "leaf",
                       "label": "hostile_swarm"
                     },
                     "right": {
                       "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.63526,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.08899,
-                    "left": {
-                      "type": "split",
                       "feature": 2,
                       "featureName": "rcs",
-                      "threshold": 0.05587,
+                      "threshold": 0.06345,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.14613,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
                       },
                       "right": {
                         "type": "leaf",
@@ -2797,103 +2721,23 @@ const FOREST: TreeNode[] = [
                 },
                 "right": {
                   "type": "split",
-                  "feature": 0,
-                  "featureName": "speed",
-                  "threshold": 26.6939,
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.05387,
                   "left": {
                     "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 19.30842,
-                    "left": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.54861,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 21.90962,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 29.38892,
-                    "left": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.0433,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.90047,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  }
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 114.01262,
-                "left": {
-                  "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.97909,
-                  "left": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.03725,
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 61.77471,
                     "left": {
                       "type": "leaf",
-                      "label": "hostile_recon"
+                      "label": "hostile_attack"
                     },
                     "right": {
                       "type": "split",
-                      "feature": 5,
-                      "featureName": "rfStrength",
-                      "threshold": 56.67348,
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.09858,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_attack"
@@ -2905,61 +2749,17 @@ const FOREST: TreeNode[] = [
                     }
                   },
                   "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 7,
-                  "featureName": "acousticConf",
-                  "threshold": 0.12549,
-                  "left": {
                     "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.04773,
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 29.01947,
                     "left": {
                       "type": "leaf",
-                      "label": "hostile_recon"
+                      "label": "hostile_attack"
                     },
                     "right": {
                       "type": "leaf",
                       "label": "hostile_attack"
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.56776,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 23.77135,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 23.4628,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
                     }
                   }
                 }
@@ -2969,67 +2769,91 @@ const FOREST: TreeNode[] = [
               "type": "split",
               "feature": 2,
               "featureName": "rcs",
-              "threshold": 0.0498,
+              "threshold": 0.03418,
               "left": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 129.98849,
-                "left": {
-                  "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.7845,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_recon"
-                }
+                "type": "leaf",
+                "label": "civilian"
               },
               "right": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              }
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 1,
+            "featureName": "altitude",
+            "threshold": 102.19489,
+            "left": {
+              "type": "split",
+              "feature": 7,
+              "featureName": "acousticConf",
+              "threshold": 0.69381,
+              "left": {
                 "type": "split",
                 "feature": 0,
                 "featureName": "speed",
-                "threshold": 15.2641,
+                "threshold": 22.10725,
                 "left": {
                   "type": "leaf",
-                  "label": "hostile_recon"
+                  "label": "civilian"
                 },
                 "right": {
                   "type": "leaf",
-                  "label": "hostile_recon"
+                  "label": "hostile_attack"
                 }
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_attack"
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 23.26833,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_attack"
               }
             }
           }
         },
         "right": {
           "type": "split",
-          "feature": 5,
-          "featureName": "rfStrength",
-          "threshold": 50.14413,
+          "feature": 0,
+          "featureName": "speed",
+          "threshold": 18.72831,
           "left": {
             "type": "split",
-            "feature": 6,
-            "featureName": "eoConf",
-            "threshold": 0.81627,
+            "feature": 1,
+            "featureName": "altitude",
+            "threshold": 93.73126,
             "left": {
-              "type": "leaf",
-              "label": "hostile_recon"
+              "type": "split",
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 59.09515,
+              "left": {
+                "type": "leaf",
+                "label": "civilian"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "civilian"
+              }
             },
             "right": {
               "type": "split",
-              "feature": 9,
-              "featureName": "distNorm",
-              "threshold": 0.80965,
+              "feature": 5,
+              "featureName": "rfStrength",
+              "threshold": 75.76167,
               "left": {
                 "type": "leaf",
                 "label": "hostile_recon"
@@ -3042,41 +2866,31 @@ const FOREST: TreeNode[] = [
           },
           "right": {
             "type": "split",
-            "feature": 4,
-            "featureName": "rfFreqBand",
-            "threshold": 2.5,
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 20.32454,
             "left": {
               "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 18.8107,
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 115.42719,
               "left": {
                 "type": "split",
-                "feature": 5,
-                "featureName": "rfStrength",
-                "threshold": 79.84468,
+                "feature": 7,
+                "featureName": "acousticConf",
+                "threshold": 0.47295,
                 "left": {
                   "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.23426,
+                  "feature": 6,
+                  "featureName": "eoConf",
+                  "threshold": 0.80477,
                   "left": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 109.9192,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    }
+                    "type": "leaf",
+                    "label": "hostile_swarm"
                   },
                   "right": {
                     "type": "leaf",
-                    "label": "hostile_recon"
+                    "label": "hostile_swarm"
                   }
                 },
                 "right": {
@@ -3085,150 +2899,100 @@ const FOREST: TreeNode[] = [
                 }
               },
               "right": {
-                "type": "split",
-                "feature": 5,
-                "featureName": "rfStrength",
-                "threshold": 56.00023,
-                "left": {
-                  "type": "split",
-                  "feature": 7,
-                  "featureName": "acousticConf",
-                  "threshold": 0.07039,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.25829,
-                    "left": {
-                      "type": "split",
-                      "feature": 1,
-                      "featureName": "altitude",
-                      "threshold": 105.61924,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 0,
-                  "featureName": "speed",
-                  "threshold": 20.2389,
-                  "left": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.43873,
-                    "left": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.04654,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.0466,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.68095,
-                    "left": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.00295,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.55342,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  }
-                }
+                "type": "leaf",
+                "label": "hostile_recon"
               }
             },
             "right": {
+              "type": "split",
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 20.47501,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_swarm"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_swarm"
+              }
+            }
+          }
+        }
+      }
+    },
+    "right": {
+      "type": "split",
+      "feature": 4,
+      "featureName": "rfFreqBand",
+      "threshold": 2.5,
+      "left": {
+        "type": "split",
+        "feature": 0,
+        "featureName": "speed",
+        "threshold": 22.00294,
+        "left": {
+          "type": "split",
+          "feature": 6,
+          "featureName": "eoConf",
+          "threshold": 0.53713,
+          "left": {
+            "type": "leaf",
+            "label": "hostile_recon"
+          },
+          "right": {
+            "type": "split",
+            "feature": 6,
+            "featureName": "eoConf",
+            "threshold": 0.54176,
+            "left": {
               "type": "leaf",
-              "label": "friendly"
+              "label": "hostile_recon"
+            },
+            "right": {
+              "type": "leaf",
+              "label": "hostile_recon"
+            }
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 4,
+          "featureName": "rfFreqBand",
+          "threshold": 1.5,
+          "left": {
+            "type": "split",
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 30.61447,
+            "left": {
+              "type": "leaf",
+              "label": "hostile_attack"
+            },
+            "right": {
+              "type": "leaf",
+              "label": "hostile_attack"
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 1,
+            "featureName": "altitude",
+            "threshold": 129.2476,
+            "left": {
+              "type": "leaf",
+              "label": "hostile_swarm"
+            },
+            "right": {
+              "type": "leaf",
+              "label": "hostile_swarm"
             }
           }
         }
       },
       "right": {
-        "type": "split",
-        "feature": 8,
-        "featureName": "iff",
-        "threshold": 1.5,
-        "left": {
-          "type": "split",
-          "feature": 0,
-          "featureName": "speed",
-          "threshold": 15.47043,
-          "left": {
-            "type": "leaf",
-            "label": "civilian"
-          },
-          "right": {
-            "type": "leaf",
-            "label": "friendly"
-          }
-        },
-        "right": {
-          "type": "leaf",
-          "label": "friendly"
-        }
+        "type": "leaf",
+        "label": "friendly"
       }
     }
   },
@@ -3241,7 +3005,7 @@ const FOREST: TreeNode[] = [
       "type": "split",
       "feature": 2,
       "featureName": "rcs",
-      "threshold": 0.01555,
+      "threshold": 0.01539,
       "left": {
         "type": "leaf",
         "label": "bird"
@@ -3250,12 +3014,12 @@ const FOREST: TreeNode[] = [
         "type": "split",
         "feature": 7,
         "featureName": "acousticConf",
-        "threshold": 0.0001,
+        "threshold": 0.00019,
         "left": {
           "type": "split",
           "feature": 2,
           "featureName": "rcs",
-          "threshold": 0.06976,
+          "threshold": 0.07064,
           "left": {
             "type": "leaf",
             "label": "hostile_recon"
@@ -3274,22 +3038,22 @@ const FOREST: TreeNode[] = [
             "type": "split",
             "feature": 6,
             "featureName": "eoConf",
-            "threshold": 0.88559,
+            "threshold": 0.78894,
             "left": {
               "type": "split",
               "feature": 1,
               "featureName": "altitude",
-              "threshold": 128.31264,
+              "threshold": 126.44953,
               "left": {
                 "type": "split",
                 "feature": 0,
                 "featureName": "speed",
-                "threshold": 27.32798,
+                "threshold": 28.16385,
                 "left": {
                   "type": "split",
                   "feature": 0,
                   "featureName": "speed",
-                  "threshold": 18.98021,
+                  "threshold": 19.24938,
                   "left": {
                     "type": "leaf",
                     "label": "hostile_recon"
@@ -3298,26 +3062,12 @@ const FOREST: TreeNode[] = [
                     "type": "split",
                     "feature": 1,
                     "featureName": "altitude",
-                    "threshold": 87.56691,
+                    "threshold": 92.03782,
                     "left": {
                       "type": "split",
                       "feature": 2,
                       "featureName": "rcs",
-                      "threshold": 0.05925,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.05652,
+                      "threshold": 0.06133,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_swarm"
@@ -3326,6 +3076,20 @@ const FOREST: TreeNode[] = [
                         "type": "leaf",
                         "label": "hostile_attack"
                       }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 20.51891,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
                     }
                   }
                 },
@@ -3333,24 +3097,20 @@ const FOREST: TreeNode[] = [
                   "type": "split",
                   "feature": 2,
                   "featureName": "rcs",
-                  "threshold": 0.03799,
+                  "threshold": 0.05635,
                   "left": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
-                  },
-                  "right": {
                     "type": "split",
                     "feature": 2,
                     "featureName": "rcs",
-                    "threshold": 0.04204,
+                    "threshold": 0.05202,
                     "left": {
                       "type": "split",
                       "feature": 0,
                       "featureName": "speed",
-                      "threshold": 32.0387,
+                      "threshold": 29.54763,
                       "left": {
                         "type": "leaf",
-                        "label": "hostile_swarm"
+                        "label": "hostile_attack"
                       },
                       "right": {
                         "type": "leaf",
@@ -3361,7 +3121,7 @@ const FOREST: TreeNode[] = [
                       "type": "split",
                       "feature": 1,
                       "featureName": "altitude",
-                      "threshold": 109.07581,
+                      "threshold": 92.53411,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_attack"
@@ -3371,6 +3131,10 @@ const FOREST: TreeNode[] = [
                         "label": "hostile_attack"
                       }
                     }
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
                   }
                 }
               },
@@ -3378,7 +3142,7 @@ const FOREST: TreeNode[] = [
                 "type": "split",
                 "feature": 1,
                 "featureName": "altitude",
-                "threshold": 131.41633,
+                "threshold": 130.28105,
                 "left": {
                   "type": "leaf",
                   "label": "hostile_recon"
@@ -3390,71 +3154,121 @@ const FOREST: TreeNode[] = [
               }
             },
             "right": {
-              "type": "leaf",
-              "label": "hostile_swarm"
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 7,
-            "featureName": "acousticConf",
-            "threshold": 0.55225,
-            "left": {
               "type": "split",
-              "feature": 1,
-              "featureName": "altitude",
-              "threshold": 124.63588,
+              "feature": 9,
+              "featureName": "distNorm",
+              "threshold": 0.84406,
               "left": {
                 "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 29.52042,
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 99.05614,
                 "left": {
                   "type": "split",
                   "feature": 0,
                   "featureName": "speed",
-                  "threshold": 19.18232,
+                  "threshold": 31.40943,
                   "left": {
                     "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 92.28426,
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 26.72478,
                     "left": {
                       "type": "leaf",
                       "label": "hostile_swarm"
                     },
                     "right": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.95001,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
+                      "type": "leaf",
+                      "label": "hostile_swarm"
                     }
                   },
                   "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 20.53491,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 92.15916,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                }
+              }
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 1,
+            "featureName": "altitude",
+            "threshold": 123.78656,
+            "left": {
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.06113,
+              "left": {
+                "type": "split",
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 50.02075,
+                "left": {
+                  "type": "split",
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 23.84297,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 31.08911,
+                  "left": {
                     "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 106.14795,
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.0284,
                     "left": {
                       "type": "split",
                       "feature": 5,
                       "featureName": "rfStrength",
-                      "threshold": 49.60149,
+                      "threshold": 74.94337,
                       "left": {
                         "type": "leaf",
-                        "label": "hostile_attack"
+                        "label": "hostile_recon"
                       },
                       "right": {
                         "type": "leaf",
-                        "label": "hostile_swarm"
+                        "label": "hostile_recon"
                       }
                     },
                     "right": {
@@ -3471,93 +3285,113 @@ const FOREST: TreeNode[] = [
                         "label": "hostile_swarm"
                       }
                     }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.0366,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
                   },
                   "right": {
                     "type": "split",
-                    "feature": 4,
-                    "featureName": "rfFreqBand",
-                    "threshold": 1.5,
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 62.6692,
                     "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
+                      "type": "split",
+                      "feature": 1,
+                      "featureName": "altitude",
+                      "threshold": 61.05163,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
                     },
                     "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
+                      "type": "split",
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.03697,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
                     }
                   }
                 }
               },
               "right": {
                 "type": "split",
-                "feature": 7,
-                "featureName": "acousticConf",
-                "threshold": 0.0763,
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 25.24172,
                 "left": {
-                  "type": "split",
-                  "feature": 5,
-                  "featureName": "rfStrength",
-                  "threshold": 78.3032,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "friendly"
-                  }
+                  "type": "leaf",
+                  "label": "hostile_swarm"
                 },
                 "right": {
                   "type": "split",
                   "feature": 2,
                   "featureName": "rcs",
-                  "threshold": 0.06391,
+                  "threshold": 0.06444,
                   "left": {
                     "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.51538,
+                    "feature": 5,
+                    "featureName": "rfStrength",
+                    "threshold": 87.12884,
                     "left": {
                       "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.49686,
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 29.12682,
                       "left": {
                         "type": "leaf",
-                        "label": "hostile_recon"
+                        "label": "hostile_attack"
                       },
                       "right": {
                         "type": "leaf",
-                        "label": "hostile_recon"
+                        "label": "hostile_attack"
                       }
                     },
                     "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
+                      "type": "split",
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.06305,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
                     }
                   },
                   "right": {
                     "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.13877,
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 29.74907,
                     "left": {
-                      "type": "leaf",
-                      "label": "friendly"
+                      "type": "split",
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.06831,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
                     },
                     "right": {
                       "type": "leaf",
-                      "label": "friendly"
+                      "label": "hostile_attack"
                     }
                   }
                 }
@@ -3565,56 +3399,36 @@ const FOREST: TreeNode[] = [
             },
             "right": {
               "type": "split",
-              "feature": 1,
-              "featureName": "altitude",
-              "threshold": 122.61155,
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.05408,
               "left": {
                 "type": "split",
-                "feature": 4,
-                "featureName": "rfFreqBand",
-                "threshold": 1.5,
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 53.69908,
                 "left": {
-                  "type": "split",
-                  "feature": 5,
-                  "featureName": "rfStrength",
-                  "threshold": 41.33149,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.03523,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.65254,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  }
+                  "type": "leaf",
+                  "label": "hostile_recon"
                 },
                 "right": {
                   "type": "split",
                   "feature": 0,
                   "featureName": "speed",
-                  "threshold": 19.77584,
+                  "threshold": 22.64345,
                   "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 20.43718,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    }
                   },
                   "right": {
                     "type": "leaf",
@@ -3624,36 +3438,16 @@ const FOREST: TreeNode[] = [
               },
               "right": {
                 "type": "split",
-                "feature": 4,
-                "featureName": "rfFreqBand",
-                "threshold": 1.5,
+                "feature": 2,
+                "featureName": "rcs",
+                "threshold": 0.08374,
                 "left": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.04864,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
+                  "type": "leaf",
+                  "label": "hostile_attack"
                 },
                 "right": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.04997,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  }
+                  "type": "leaf",
+                  "label": "friendly"
                 }
               }
             }
@@ -3663,9 +3457,9 @@ const FOREST: TreeNode[] = [
     },
     "right": {
       "type": "split",
-      "feature": 2,
-      "featureName": "rcs",
-      "threshold": 0.05481,
+      "feature": 0,
+      "featureName": "speed",
+      "threshold": 15.73905,
       "left": {
         "type": "leaf",
         "label": "civilian"
@@ -3680,12 +3474,12 @@ const FOREST: TreeNode[] = [
     "type": "split",
     "feature": 2,
     "featureName": "rcs",
-    "threshold": 0.08301,
+    "threshold": 0.08492,
     "left": {
       "type": "split",
       "feature": 0,
       "featureName": "speed",
-      "threshold": 19.67489,
+      "threshold": 20.33884,
       "left": {
         "type": "split",
         "feature": 8,
@@ -3700,7 +3494,7 @@ const FOREST: TreeNode[] = [
             "type": "split",
             "feature": 2,
             "featureName": "rcs",
-            "threshold": 0.01614,
+            "threshold": 0.01598,
             "left": {
               "type": "leaf",
               "label": "bird"
@@ -3709,55 +3503,85 @@ const FOREST: TreeNode[] = [
               "type": "split",
               "feature": 0,
               "featureName": "speed",
-              "threshold": 18.98021,
-              "left": {
-                "type": "leaf",
-                "label": "hostile_recon"
-              },
-              "right": {
-                "type": "leaf",
-                "label": "hostile_recon"
-              }
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 2,
-            "featureName": "rcs",
-            "threshold": 0.05068,
-            "left": {
-              "type": "split",
-              "feature": 5,
-              "featureName": "rfStrength",
-              "threshold": 81.77124,
+              "threshold": 19.30385,
               "left": {
                 "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 93.41171,
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.22939,
+                "left": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.03209,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  }
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.60227,
                 "left": {
                   "type": "leaf",
                   "label": "hostile_recon"
                 },
                 "right": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                }
+              }
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 19.13125,
+            "left": {
+              "type": "split",
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 93.77531,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_swarm"
+              },
+              "right": {
+                "type": "split",
+                "feature": 2,
+                "featureName": "rcs",
+                "threshold": 0.05206,
+                "left": {
                   "type": "split",
                   "feature": 5,
                   "featureName": "rfStrength",
-                  "threshold": 77.88662,
+                  "threshold": 76.0336,
                   "left": {
                     "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.0478,
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 18.58672,
                     "left": {
                       "type": "leaf",
                       "label": "hostile_recon"
                     },
                     "right": {
                       "type": "split",
-                      "feature": 6,
-                      "featureName": "eoConf",
-                      "threshold": 0.27528,
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 18.67201,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_recon"
@@ -3770,37 +3594,87 @@ const FOREST: TreeNode[] = [
                   },
                   "right": {
                     "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.80786,
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 111.73836,
                     "left": {
                       "type": "leaf",
-                      "label": "hostile_recon"
+                      "label": "hostile_swarm"
                     },
                     "right": {
                       "type": "leaf",
                       "label": "hostile_recon"
                     }
                   }
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
                 }
-              },
-              "right": {
-                "type": "leaf",
-                "label": "hostile_swarm"
               }
             },
             "right": {
               "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 18.45403,
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.04651,
               "left": {
-                "type": "leaf",
-                "label": "hostile_recon"
+                "type": "split",
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 80.64944,
+                "left": {
+                  "type": "split",
+                  "feature": 4,
+                  "featureName": "rfFreqBand",
+                  "threshold": 1.5,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 5,
+                    "featureName": "rfStrength",
+                    "threshold": 53.32392,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.43659,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                }
               },
               "right": {
-                "type": "leaf",
-                "label": "hostile_swarm"
+                "type": "split",
+                "feature": 6,
+                "featureName": "eoConf",
+                "threshold": 0.60417,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                }
               }
             }
           }
@@ -3812,329 +3686,299 @@ const FOREST: TreeNode[] = [
       },
       "right": {
         "type": "split",
-        "feature": 2,
-        "featureName": "rcs",
-        "threshold": 0.06121,
+        "feature": 4,
+        "featureName": "rfFreqBand",
+        "threshold": 1.5,
         "left": {
           "type": "split",
-          "feature": 4,
-          "featureName": "rfFreqBand",
-          "threshold": 1.5,
+          "feature": 5,
+          "featureName": "rfStrength",
+          "threshold": 38.8047,
           "left": {
             "type": "split",
-            "feature": 1,
-            "featureName": "altitude",
-            "threshold": 131.73346,
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 28.58102,
             "left": {
               "type": "split",
-              "feature": 4,
-              "featureName": "rfFreqBand",
-              "threshold": 0.5,
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.06135,
               "left": {
                 "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 75.72927,
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.74059,
                 "left": {
                   "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.94215,
-                  "left": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 29.99832,
-                    "left": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.64242,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.71221,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 6,
-                  "featureName": "eoConf",
-                  "threshold": 0.07912,
-                  "left": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.04528,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 26.61398,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.03878,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 27.74748,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  }
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.04076,
-                "left": {
-                  "type": "split",
-                  "feature": 7,
-                  "featureName": "acousticConf",
-                  "threshold": 0.5482,
-                  "left": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.33647,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 106.17836,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 5,
-                    "featureName": "rfStrength",
-                    "threshold": 46.63177,
-                    "left": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.2236,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  }
-                }
-              }
-            },
-            "right": {
-              "type": "leaf",
-              "label": "hostile_recon"
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 7,
-            "featureName": "acousticConf",
-            "threshold": 0.00139,
-            "left": {
-              "type": "leaf",
-              "label": "hostile_swarm"
-            },
-            "right": {
-              "type": "split",
-              "feature": 5,
-              "featureName": "rfStrength",
-              "threshold": 50.19148,
-              "left": {
-                "type": "leaf",
-                "label": "hostile_recon"
-              },
-              "right": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 126.71217,
-                "left": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 122.00195,
-                  "left": {
-                    "type": "split",
-                    "feature": 5,
-                    "featureName": "rfStrength",
-                    "threshold": 60.72458,
-                    "left": {
-                      "type": "split",
-                      "feature": 1,
-                      "featureName": "altitude",
-                      "threshold": 105.33566,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 123.17735,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_recon"
-                }
-              }
-            }
-          }
-        },
-        "right": {
-          "type": "split",
-          "feature": 7,
-          "featureName": "acousticConf",
-          "threshold": 0.0047,
-          "left": {
-            "type": "leaf",
-            "label": "friendly"
-          },
-          "right": {
-            "type": "split",
-            "feature": 4,
-            "featureName": "rfFreqBand",
-            "threshold": 1.5,
-            "left": {
-              "type": "split",
-              "feature": 5,
-              "featureName": "rfStrength",
-              "threshold": 20.08275,
-              "left": {
-                "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.06366,
-                "left": {
-                  "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.33111,
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.03066,
                   "left": {
                     "type": "leaf",
                     "label": "hostile_swarm"
                   },
                   "right": {
                     "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 120.09892,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.52523,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.05577,
+                  "left": {
+                    "type": "split",
                     "feature": 7,
                     "featureName": "acousticConf",
-                    "threshold": 0.21406,
+                    "threshold": 0.11903,
                     "left": {
                       "type": "leaf",
                       "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.04239,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  }
+                }
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_attack"
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 7,
+              "featureName": "acousticConf",
+              "threshold": 0.55042,
+              "left": {
+                "type": "split",
+                "feature": 7,
+                "featureName": "acousticConf",
+                "threshold": 0.10954,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 9,
+                  "featureName": "distNorm",
+                  "threshold": 0.33891,
+                  "left": {
+                    "type": "split",
+                    "feature": 9,
+                    "featureName": "distNorm",
+                    "threshold": 0.32183,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.15747,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 7,
+                    "featureName": "acousticConf",
+                    "threshold": 0.42699,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.46163,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.54564,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.04251,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.20139,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
                     },
                     "right": {
                       "type": "leaf",
                       "label": "hostile_attack"
                     }
                   }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
                 }
+              }
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 9,
+            "featureName": "distNorm",
+            "threshold": 0.70284,
+            "left": {
+              "type": "split",
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 23.31649,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
               },
               "right": {
                 "type": "leaf",
                 "label": "hostile_attack"
+              }
+            },
+            "right": {
+              "type": "leaf",
+              "label": "hostile_attack"
+            }
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 2,
+          "featureName": "rcs",
+          "threshold": 0.02828,
+          "left": {
+            "type": "leaf",
+            "label": "hostile_recon"
+          },
+          "right": {
+            "type": "split",
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 22.54524,
+            "left": {
+              "type": "split",
+              "feature": 9,
+              "featureName": "distNorm",
+              "threshold": 0.45937,
+              "left": {
+                "type": "split",
+                "feature": 7,
+                "featureName": "acousticConf",
+                "threshold": 0.36981,
+                "left": {
+                  "type": "split",
+                  "feature": 9,
+                  "featureName": "distNorm",
+                  "threshold": 0.39995,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 9,
+                  "featureName": "distNorm",
+                  "threshold": 0.34561,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 21.88324,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
+                  }
+                }
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_swarm"
               }
             },
             "right": {
@@ -4147,12 +3991,22 @@ const FOREST: TreeNode[] = [
     },
     "right": {
       "type": "split",
-      "feature": 1,
-      "featureName": "altitude",
-      "threshold": 132.81521,
+      "feature": 8,
+      "featureName": "iff",
+      "threshold": 0.5,
       "left": {
-        "type": "leaf",
-        "label": "hostile_attack"
+        "type": "split",
+        "feature": 0,
+        "featureName": "speed",
+        "threshold": 26.25021,
+        "left": {
+          "type": "leaf",
+          "label": "friendly"
+        },
+        "right": {
+          "type": "leaf",
+          "label": "friendly"
+        }
       },
       "right": {
         "type": "leaf",
@@ -4164,7 +4018,7 @@ const FOREST: TreeNode[] = [
     "type": "split",
     "feature": 0,
     "featureName": "speed",
-    "threshold": 12.42738,
+    "threshold": 13.30353,
     "left": {
       "type": "split",
       "feature": 4,
@@ -4174,17 +4028,17 @@ const FOREST: TreeNode[] = [
         "type": "split",
         "feature": 0,
         "featureName": "speed",
-        "threshold": 10.30154,
+        "threshold": 10.51148,
         "left": {
           "type": "split",
           "feature": 1,
           "featureName": "altitude",
-          "threshold": 55.69549,
+          "threshold": 54.05377,
           "left": {
             "type": "split",
-            "feature": 6,
-            "featureName": "eoConf",
-            "threshold": 0.89412,
+            "feature": 9,
+            "featureName": "distNorm",
+            "threshold": 0.29497,
             "left": {
               "type": "split",
               "feature": 8,
@@ -4200,52 +4054,142 @@ const FOREST: TreeNode[] = [
               }
             },
             "right": {
-              "type": "leaf",
-              "label": "bird"
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.01327,
+              "left": {
+                "type": "split",
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 28.83291,
+                "left": {
+                  "type": "leaf",
+                  "label": "bird"
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 1,
+                  "featureName": "altitude",
+                  "threshold": 29.21513,
+                  "left": {
+                    "type": "leaf",
+                    "label": "bird"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.01238,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.18986,
+                      "left": {
+                        "type": "leaf",
+                        "label": "bird"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "bird"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "bird"
+                    }
+                  }
+                }
+              },
+              "right": {
+                "type": "leaf",
+                "label": "civilian"
+              }
             }
           },
           "right": {
-            "type": "leaf",
-            "label": "civilian"
-          }
-        },
-        "right": {
-          "type": "split",
-          "feature": 2,
-          "featureName": "rcs",
-          "threshold": 0.01107,
-          "left": {
-            "type": "leaf",
-            "label": "bird"
-          },
-          "right": {
             "type": "split",
-            "feature": 1,
-            "featureName": "altitude",
-            "threshold": 85.7959,
+            "feature": 2,
+            "featureName": "rcs",
+            "threshold": 0.01286,
             "left": {
               "type": "leaf",
               "label": "civilian"
             },
             "right": {
               "type": "leaf",
-              "label": "hostile_recon"
+              "label": "civilian"
+            }
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 7,
+          "featureName": "acousticConf",
+          "threshold": 0.01934,
+          "left": {
+            "type": "leaf",
+            "label": "hostile_recon"
+          },
+          "right": {
+            "type": "split",
+            "feature": 7,
+            "featureName": "acousticConf",
+            "threshold": 0.34459,
+            "left": {
+              "type": "split",
+              "feature": 7,
+              "featureName": "acousticConf",
+              "threshold": 0.17581,
+              "left": {
+                "type": "leaf",
+                "label": "civilian"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "civilian"
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 8,
+              "featureName": "iff",
+              "threshold": 0.5,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "civilian"
+              }
             }
           }
         }
       },
       "right": {
         "type": "split",
-        "feature": 8,
-        "featureName": "iff",
-        "threshold": 0.5,
+        "feature": 7,
+        "featureName": "acousticConf",
+        "threshold": 0.00014,
         "left": {
           "type": "leaf",
           "label": "hostile_recon"
         },
         "right": {
-          "type": "leaf",
-          "label": "civilian"
+          "type": "split",
+          "feature": 1,
+          "featureName": "altitude",
+          "threshold": 87.2966,
+          "left": {
+            "type": "leaf",
+            "label": "civilian"
+          },
+          "right": {
+            "type": "leaf",
+            "label": "hostile_recon"
+          }
         }
       }
     },
@@ -4253,457 +4197,53 @@ const FOREST: TreeNode[] = [
       "type": "split",
       "feature": 7,
       "featureName": "acousticConf",
-      "threshold": 2e-05,
+      "threshold": 4e-05,
       "left": {
         "type": "split",
-        "feature": 8,
-        "featureName": "iff",
-        "threshold": 0.5,
-        "left": {
-          "type": "split",
-          "feature": 1,
-          "featureName": "altitude",
-          "threshold": 210.08566,
-          "left": {
-            "type": "split",
-            "feature": 2,
-            "featureName": "rcs",
-            "threshold": 0.07232,
-            "left": {
-              "type": "leaf",
-              "label": "hostile_recon"
-            },
-            "right": {
-              "type": "leaf",
-              "label": "friendly"
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 2,
-            "featureName": "rcs",
-            "threshold": 0.06655,
-            "left": {
-              "type": "leaf",
-              "label": "hostile_recon"
-            },
-            "right": {
-              "type": "leaf",
-              "label": "friendly"
-            }
-          }
-        },
-        "right": {
-          "type": "leaf",
-          "label": "friendly"
-        }
-      },
-      "right": {
-        "type": "split",
-        "feature": 5,
-        "featureName": "rfStrength",
-        "threshold": 79.83986,
+        "feature": 1,
+        "featureName": "altitude",
+        "threshold": 203.45107,
         "left": {
           "type": "split",
           "feature": 0,
           "featureName": "speed",
-          "threshold": 28.82071,
+          "threshold": 18.46407,
           "left": {
             "type": "split",
-            "feature": 5,
-            "featureName": "rfStrength",
-            "threshold": 58.50227,
-            "left": {
-              "type": "split",
-              "feature": 1,
-              "featureName": "altitude",
-              "threshold": 101.83289,
-              "left": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 66.86401,
-                "left": {
-                  "type": "split",
-                  "feature": 8,
-                  "featureName": "iff",
-                  "threshold": 0.5,
-                  "left": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 27.62357,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 26.28023,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "civilian"
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.06393,
-                  "left": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.07406,
-                    "left": {
-                      "type": "split",
-                      "feature": 5,
-                      "featureName": "rfStrength",
-                      "threshold": 8.14262,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "civilian"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 1,
-                      "featureName": "altitude",
-                      "threshold": 95.25031,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 124.60175,
-                "left": {
-                  "type": "split",
-                  "feature": 4,
-                  "featureName": "rfFreqBand",
-                  "threshold": 0.5,
-                  "left": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.45399,
-                    "left": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.3094,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.04486,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.05417,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 21.24193,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.05203,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  }
-                }
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 1,
-              "featureName": "altitude",
-              "threshold": 125.92147,
-              "left": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 20.01262,
-                "left": {
-                  "type": "split",
-                  "feature": 5,
-                  "featureName": "rfStrength",
-                  "threshold": 60.01037,
-                  "left": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.03112,
-                    "left": {
-                      "type": "leaf",
-                      "label": "civilian"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.88726,
-                    "left": {
-                      "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.38935,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 118.40443,
-                  "left": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.07411,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 6,
-                      "featureName": "eoConf",
-                      "threshold": 0.05857,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 27.33553,
-                    "left": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.37213,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  }
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 8,
-                "featureName": "iff",
-                "threshold": 0.5,
-                "left": {
-                  "type": "split",
-                  "feature": 0,
-                  "featureName": "speed",
-                  "threshold": 20.87579,
-                  "left": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.9794,
-                    "left": {
-                      "type": "split",
-                      "feature": 4,
-                      "featureName": "rfFreqBand",
-                      "threshold": 1.5,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "friendly"
-                  }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "friendly"
-                }
-              }
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 2,
-            "featureName": "rcs",
-            "threshold": 0.03714,
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 17.3006,
             "left": {
               "type": "leaf",
-              "label": "hostile_swarm"
+              "label": "hostile_recon"
             },
             "right": {
               "type": "split",
               "feature": 4,
               "featureName": "rfFreqBand",
-              "threshold": 1.5,
+              "threshold": 2.5,
               "left": {
-                "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.05578,
-                "left": {
-                  "type": "split",
-                  "feature": 3,
-                  "featureName": "rfPresent",
-                  "threshold": 0.5,
-                  "left": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.50758,
-                    "left": {
-                      "type": "split",
-                      "feature": 1,
-                      "featureName": "altitude",
-                      "threshold": 66.42873,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
-                }
+                "type": "leaf",
+                "label": "hostile_recon"
               },
               "right": {
                 "type": "leaf",
-                "label": "hostile_swarm"
+                "label": "friendly"
               }
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 4,
+            "featureName": "rfFreqBand",
+            "threshold": 2.5,
+            "left": {
+              "type": "leaf",
+              "label": "hostile_recon"
+            },
+            "right": {
+              "type": "leaf",
+              "label": "friendly"
             }
           }
         },
@@ -4711,34 +4251,392 @@ const FOREST: TreeNode[] = [
           "type": "split",
           "feature": 2,
           "featureName": "rcs",
-          "threshold": 0.09077,
+          "threshold": 0.06642,
+          "left": {
+            "type": "leaf",
+            "label": "hostile_recon"
+          },
+          "right": {
+            "type": "leaf",
+            "label": "friendly"
+          }
+        }
+      },
+      "right": {
+        "type": "split",
+        "feature": 4,
+        "featureName": "rfFreqBand",
+        "threshold": 1.5,
+        "left": {
+          "type": "split",
+          "feature": 2,
+          "featureName": "rcs",
+          "threshold": 0.0418,
           "left": {
             "type": "split",
-            "feature": 2,
-            "featureName": "rcs",
-            "threshold": 0.06093,
+            "feature": 8,
+            "featureName": "iff",
+            "threshold": 0.5,
             "left": {
               "type": "split",
               "feature": 2,
               "featureName": "rcs",
-              "threshold": 0.04118,
+              "threshold": 0.0366,
               "left": {
                 "type": "split",
-                "feature": 7,
-                "featureName": "acousticConf",
-                "threshold": 0.42215,
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 15.09479,
                 "left": {
-                  "type": "leaf",
-                  "label": "hostile_swarm"
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.02796,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 19.76229,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.44698,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
+                  }
                 },
                 "right": {
                   "type": "split",
-                  "feature": 0,
-                  "featureName": "speed",
-                  "threshold": 29.10286,
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.03611,
+                  "left": {
+                    "type": "split",
+                    "feature": 5,
+                    "featureName": "rfStrength",
+                    "threshold": 78.00119,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    }
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 113.98754,
+                "left": {
+                  "type": "split",
+                  "feature": 3,
+                  "featureName": "rfPresent",
+                  "threshold": 0.5,
+                  "left": {
+                    "type": "split",
+                    "feature": 9,
+                    "featureName": "distNorm",
+                    "threshold": 0.3017,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.35984,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.04124,
+                    "left": {
+                      "type": "split",
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.75641,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 4,
+                  "featureName": "rfFreqBand",
+                  "threshold": 0.5,
                   "left": {
                     "type": "leaf",
-                    "label": "hostile_swarm"
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  }
+                }
+              }
+            },
+            "right": {
+              "type": "leaf",
+              "label": "civilian"
+            }
+          },
+          "right": {
+            "type": "split",
+            "feature": 2,
+            "featureName": "rcs",
+            "threshold": 0.05001,
+            "left": {
+              "type": "split",
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 21.03072,
+              "left": {
+                "type": "split",
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.15413,
+                "left": {
+                  "type": "split",
+                  "feature": 9,
+                  "featureName": "distNorm",
+                  "threshold": 0.09706,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 6,
+                  "featureName": "eoConf",
+                  "threshold": 0.23477,
+                  "left": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 18.18096,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    }
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 20.07977,
+                "left": {
+                  "type": "split",
+                  "feature": 1,
+                  "featureName": "altitude",
+                  "threshold": 102.30835,
+                  "left": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 77.77813,
+                    "left": {
+                      "type": "split",
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.35679,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 30.14353,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 110.74815,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.48967,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 30.18951,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                }
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.0583,
+              "left": {
+                "type": "split",
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 28.4057,
+                "left": {
+                  "type": "split",
+                  "feature": 3,
+                  "featureName": "rfPresent",
+                  "threshold": 0.5,
+                  "left": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 114.99067,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.5424,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 5,
+                    "featureName": "rfStrength",
+                    "threshold": 57.27567,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 5,
+                  "featureName": "rfStrength",
+                  "threshold": 20.40596,
+                  "left": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 29.91864,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
                   },
                   "right": {
                     "type": "leaf",
@@ -4750,46 +4648,50 @@ const FOREST: TreeNode[] = [
                 "type": "split",
                 "feature": 5,
                 "featureName": "rfStrength",
-                "threshold": 94.72773,
+                "threshold": 20.03035,
                 "left": {
                   "type": "split",
-                  "feature": 0,
-                  "featureName": "speed",
-                  "threshold": 29.95131,
+                  "feature": 9,
+                  "featureName": "distNorm",
+                  "threshold": 0.64748,
                   "left": {
                     "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.01893,
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 26.81171,
                     "left": {
                       "type": "leaf",
-                      "label": "hostile_swarm"
+                      "label": "hostile_attack"
                     },
                     "right": {
                       "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 27.49174,
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.06079,
                       "left": {
                         "type": "leaf",
-                        "label": "hostile_swarm"
+                        "label": "hostile_attack"
                       },
                       "right": {
                         "type": "leaf",
-                        "label": "hostile_swarm"
+                        "label": "hostile_attack"
                       }
                     }
                   },
                   "right": {
                     "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 78.20609,
+                    "feature": 6,
+                    "featureName": "eoConf",
+                    "threshold": 0.58617,
                     "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
                       "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 32.3581,
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.8126,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_attack"
@@ -4798,46 +4700,8 @@ const FOREST: TreeNode[] = [
                         "type": "leaf",
                         "label": "hostile_attack"
                       }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
                     }
                   }
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_swarm"
-                }
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 5,
-              "featureName": "rfStrength",
-              "threshold": 93.31965,
-              "left": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 27.1838,
-                "left": {
-                  "type": "leaf",
-                  "label": "friendly"
-                },
-                "right": {
-                  "type": "leaf",
-                  "label": "hostile_attack"
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 27.82239,
-                "left": {
-                  "type": "leaf",
-                  "label": "hostile_swarm"
                 },
                 "right": {
                   "type": "leaf",
@@ -4845,10 +4709,190 @@ const FOREST: TreeNode[] = [
                 }
               }
             }
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 1,
+          "featureName": "altitude",
+          "threshold": 129.84306,
+          "left": {
+            "type": "split",
+            "feature": 5,
+            "featureName": "rfStrength",
+            "threshold": 50.16748,
+            "left": {
+              "type": "split",
+              "feature": 8,
+              "featureName": "iff",
+              "threshold": 0.5,
+              "left": {
+                "type": "split",
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 19.0754,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                }
+              },
+              "right": {
+                "type": "leaf",
+                "label": "civilian"
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 18.92202,
+              "left": {
+                "type": "split",
+                "feature": 2,
+                "featureName": "rcs",
+                "threshold": 0.02627,
+                "left": {
+                  "type": "split",
+                  "feature": 1,
+                  "featureName": "altitude",
+                  "threshold": 86.91079,
+                  "left": {
+                    "type": "leaf",
+                    "label": "civilian"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 5,
+                  "featureName": "rfStrength",
+                  "threshold": 76.0449,
+                  "left": {
+                    "type": "split",
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.04446,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    }
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_recon"
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 6,
+                "featureName": "eoConf",
+                "threshold": 0.88844,
+                "left": {
+                  "type": "split",
+                  "feature": 1,
+                  "featureName": "altitude",
+                  "threshold": 111.52238,
+                  "left": {
+                    "type": "split",
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.02928,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 20.00051,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_recon"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 20.49188,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 7,
+                  "featureName": "acousticConf",
+                  "threshold": 0.37167,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  }
+                }
+              }
+            }
           },
           "right": {
-            "type": "leaf",
-            "label": "friendly"
+            "type": "split",
+            "feature": 2,
+            "featureName": "rcs",
+            "threshold": 0.07118,
+            "left": {
+              "type": "split",
+              "feature": 5,
+              "featureName": "rfStrength",
+              "threshold": 75.67396,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              },
+              "right": {
+                "type": "split",
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 17.72449,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                }
+              }
+            },
+            "right": {
+              "type": "leaf",
+              "label": "friendly"
+            }
           }
         }
       }
@@ -4858,12 +4902,12 @@ const FOREST: TreeNode[] = [
     "type": "split",
     "feature": 2,
     "featureName": "rcs",
-    "threshold": 0.08321,
+    "threshold": 0.08604,
     "left": {
       "type": "split",
       "feature": 0,
       "featureName": "speed",
-      "threshold": 19.78184,
+      "threshold": 20.39812,
       "left": {
         "type": "split",
         "feature": 8,
@@ -4873,7 +4917,7 @@ const FOREST: TreeNode[] = [
           "type": "split",
           "feature": 1,
           "featureName": "altitude",
-          "threshold": 59.27367,
+          "threshold": 57.07873,
           "left": {
             "type": "leaf",
             "label": "bird"
@@ -4882,12 +4926,12 @@ const FOREST: TreeNode[] = [
             "type": "split",
             "feature": 1,
             "featureName": "altitude",
-            "threshold": 96.39275,
+            "threshold": 95.14916,
             "left": {
               "type": "split",
-              "feature": 5,
-              "featureName": "rfStrength",
-              "threshold": 54.66245,
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.03378,
               "left": {
                 "type": "leaf",
                 "label": "hostile_swarm"
@@ -4901,41 +4945,31 @@ const FOREST: TreeNode[] = [
               "type": "split",
               "feature": 2,
               "featureName": "rcs",
-              "threshold": 0.05276,
+              "threshold": 0.05214,
               "left": {
                 "type": "split",
                 "feature": 5,
                 "featureName": "rfStrength",
-                "threshold": 79.6494,
+                "threshold": 79.96496,
                 "left": {
                   "type": "split",
                   "feature": 6,
                   "featureName": "eoConf",
-                  "threshold": 0.81268,
+                  "threshold": 0.12069,
                   "left": {
                     "type": "split",
                     "feature": 1,
                     "featureName": "altitude",
-                    "threshold": 101.75747,
+                    "threshold": 102.92857,
                     "left": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.03953,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
+                      "type": "leaf",
+                      "label": "hostile_recon"
                     },
                     "right": {
                       "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 19.67337,
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.11229,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_recon"
@@ -4950,350 +4984,36 @@ const FOREST: TreeNode[] = [
                     "type": "split",
                     "feature": 0,
                     "featureName": "speed",
-                    "threshold": 19.02271,
+                    "threshold": 18.0942,
                     "left": {
                       "type": "leaf",
                       "label": "hostile_recon"
                     },
                     "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 18.20955,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_recon"
+                      }
                     }
                   }
                 },
                 "right": {
                   "type": "leaf",
-                  "label": "hostile_recon"
+                  "label": "hostile_swarm"
                 }
               },
               "right": {
                 "type": "leaf",
                 "label": "hostile_recon"
               }
-            }
-          }
-        },
-        "right": {
-          "type": "leaf",
-          "label": "civilian"
-        }
-      },
-      "right": {
-        "type": "split",
-        "feature": 0,
-        "featureName": "speed",
-        "threshold": 29.01886,
-        "left": {
-          "type": "split",
-          "feature": 1,
-          "featureName": "altitude",
-          "threshold": 130.7208,
-          "left": {
-            "type": "split",
-            "feature": 1,
-            "featureName": "altitude",
-            "threshold": 107.24859,
-            "left": {
-              "type": "split",
-              "feature": 4,
-              "featureName": "rfFreqBand",
-              "threshold": 1.5,
-              "left": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 27.32182,
-                "left": {
-                  "type": "split",
-                  "feature": 0,
-                  "featureName": "speed",
-                  "threshold": 25.49157,
-                  "left": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.38308,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 23.76567,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 4,
-                    "featureName": "rfFreqBand",
-                    "threshold": 0.5,
-                    "left": {
-                      "type": "split",
-                      "feature": 6,
-                      "featureName": "eoConf",
-                      "threshold": 0.67296,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 99.34866,
-                  "left": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.04612,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 27.76996,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 6,
-                      "featureName": "eoConf",
-                      "threshold": 0.64284,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.46227,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  }
-                }
-              },
-              "right": {
-                "type": "leaf",
-                "label": "hostile_swarm"
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 26.54445,
-              "left": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 109.69358,
-                "left": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.03578,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 125.45803,
-                  "left": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.1411,
-                    "left": {
-                      "type": "split",
-                      "feature": 5,
-                      "featureName": "rfStrength",
-                      "threshold": 52.48732,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.95898,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
-                  }
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 27.94204,
-                "left": {
-                  "type": "split",
-                  "feature": 5,
-                  "featureName": "rfStrength",
-                  "threshold": 65.26102,
-                  "left": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 26.87562,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.05194,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 4,
-                    "featureName": "rfFreqBand",
-                    "threshold": 1.5,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 6,
-                  "featureName": "eoConf",
-                  "threshold": 0.26345,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 5,
-                    "featureName": "rfStrength",
-                    "threshold": 51.74727,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 28.51277,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 9,
-            "featureName": "distNorm",
-            "threshold": 0.41002,
-            "left": {
-              "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.0432,
-              "left": {
-                "type": "leaf",
-                "label": "hostile_recon"
-              },
-              "right": {
-                "type": "leaf",
-                "label": "friendly"
-              }
-            },
-            "right": {
-              "type": "leaf",
-              "label": "hostile_recon"
             }
           }
         },
@@ -5301,54 +5021,64 @@ const FOREST: TreeNode[] = [
           "type": "split",
           "feature": 0,
           "featureName": "speed",
-          "threshold": 31.88296,
+          "threshold": 14.80548,
+          "left": {
+            "type": "leaf",
+            "label": "civilian"
+          },
+          "right": {
+            "type": "leaf",
+            "label": "civilian"
+          }
+        }
+      },
+      "right": {
+        "type": "split",
+        "feature": 0,
+        "featureName": "speed",
+        "threshold": 29.43945,
+        "left": {
+          "type": "split",
+          "feature": 1,
+          "featureName": "altitude",
+          "threshold": 135.10786,
           "left": {
             "type": "split",
-            "feature": 2,
-            "featureName": "rcs",
-            "threshold": 0.05646,
+            "feature": 4,
+            "featureName": "rfFreqBand",
+            "threshold": 1.5,
             "left": {
               "type": "split",
-              "feature": 4,
-              "featureName": "rfFreqBand",
-              "threshold": 1.5,
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 27.19477,
               "left": {
                 "type": "split",
-                "feature": 2,
-                "featureName": "rcs",
-                "threshold": 0.04103,
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 25.79171,
                 "left": {
                   "type": "split",
-                  "feature": 3,
-                  "featureName": "rfPresent",
-                  "threshold": 0.5,
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 20.78821,
                   "left": {
                     "type": "leaf",
                     "label": "hostile_swarm"
                   },
                   "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 4,
-                  "featureName": "rfFreqBand",
-                  "threshold": 0.5,
-                  "left": {
                     "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 29.61954,
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.05762,
                     "left": {
                       "type": "split",
-                      "feature": 9,
-                      "featureName": "distNorm",
-                      "threshold": 0.65037,
+                      "feature": 2,
+                      "featureName": "rcs",
+                      "threshold": 0.03171,
                       "left": {
                         "type": "leaf",
-                        "label": "hostile_attack"
+                        "label": "hostile_swarm"
                       },
                       "right": {
                         "type": "leaf",
@@ -5356,17 +5086,37 @@ const FOREST: TreeNode[] = [
                       }
                     },
                     "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.0609,
+                  "left": {
+                    "type": "split",
+                    "feature": 9,
+                    "featureName": "distNorm",
+                    "threshold": 0.35937,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
                       "type": "split",
-                      "feature": 1,
-                      "featureName": "altitude",
-                      "threshold": 72.77845,
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.40497,
                       "left": {
                         "type": "leaf",
-                        "label": "hostile_attack"
+                        "label": "hostile_swarm"
                       },
                       "right": {
                         "type": "leaf",
-                        "label": "hostile_attack"
+                        "label": "hostile_swarm"
                       }
                     }
                   },
@@ -5377,82 +5127,32 @@ const FOREST: TreeNode[] = [
                 }
               },
               "right": {
-                "type": "leaf",
-                "label": "hostile_swarm"
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.06166,
-              "left": {
                 "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 29.83943,
+                "feature": 2,
+                "featureName": "rcs",
+                "threshold": 0.04091,
                 "left": {
                   "type": "leaf",
-                  "label": "hostile_attack"
+                  "label": "hostile_swarm"
                 },
                 "right": {
                   "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.53163,
+                  "feature": 5,
+                  "featureName": "rfStrength",
+                  "threshold": 21.21877,
                   "left": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
-                }
-              },
-              "right": {
-                "type": "leaf",
-                "label": "hostile_attack"
-              }
-            }
-          },
-          "right": {
-            "type": "split",
-            "feature": 9,
-            "featureName": "distNorm",
-            "threshold": 0.98423,
-            "left": {
-              "type": "split",
-              "feature": 9,
-              "featureName": "distNorm",
-              "threshold": 0.67977,
-              "left": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 112.29898,
-                "left": {
-                  "type": "split",
-                  "feature": 6,
-                  "featureName": "eoConf",
-                  "threshold": 0.44141,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  },
-                  "right": {
                     "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.67252,
+                    "feature": 7,
+                    "featureName": "acousticConf",
+                    "threshold": 0.53964,
                     "left": {
                       "type": "split",
-                      "feature": 7,
-                      "featureName": "acousticConf",
-                      "threshold": 0.60479,
+                      "feature": 9,
+                      "featureName": "distNorm",
+                      "threshold": 0.66455,
                       "left": {
                         "type": "leaf",
-                        "label": "hostile_attack"
+                        "label": "hostile_swarm"
                       },
                       "right": {
                         "type": "leaf",
@@ -5463,44 +5163,138 @@ const FOREST: TreeNode[] = [
                       "type": "leaf",
                       "label": "hostile_attack"
                     }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 112.77275,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
                   },
                   "right": {
                     "type": "leaf",
                     "label": "hostile_attack"
                   }
                 }
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 124.40915,
+              "left": {
+                "type": "split",
+                "feature": 6,
+                "featureName": "eoConf",
+                "threshold": 0.59595,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 5,
+                  "featureName": "rfStrength",
+                  "threshold": 77.08788,
+                  "left": {
+                    "type": "split",
+                    "feature": 1,
+                    "featureName": "altitude",
+                    "threshold": 110.7965,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    },
+                    "right": {
+                      "type": "split",
+                      "feature": 0,
+                      "featureName": "speed",
+                      "threshold": 21.41498,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    }
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.69171,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_swarm"
+                }
+              }
+            }
+          },
+          "right": {
+            "type": "leaf",
+            "label": "hostile_recon"
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 4,
+          "featureName": "rfFreqBand",
+          "threshold": 1.5,
+          "left": {
+            "type": "split",
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 29.51141,
+            "left": {
+              "type": "leaf",
+              "label": "hostile_attack"
+            },
+            "right": {
+              "type": "split",
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 30.8765,
+              "left": {
+                "type": "split",
+                "feature": 2,
+                "featureName": "rcs",
+                "threshold": 0.04264,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_attack"
+                }
               },
               "right": {
                 "type": "leaf",
                 "label": "hostile_attack"
               }
-            },
-            "right": {
-              "type": "leaf",
-              "label": "hostile_attack"
             }
+          },
+          "right": {
+            "type": "leaf",
+            "label": "hostile_swarm"
           }
         }
       }
     },
     "right": {
       "type": "split",
-      "feature": 4,
-      "featureName": "rfFreqBand",
-      "threshold": 2.0,
+      "feature": 1,
+      "featureName": "altitude",
+      "threshold": 139.06621,
       "left": {
         "type": "leaf",
-        "label": "hostile_attack"
+        "label": "friendly"
       },
       "right": {
         "type": "leaf",
@@ -5517,12 +5311,12 @@ const FOREST: TreeNode[] = [
       "type": "split",
       "feature": 0,
       "featureName": "speed",
-      "threshold": 20.24052,
+      "threshold": 20.3205,
       "left": {
         "type": "split",
         "feature": 1,
         "featureName": "altitude",
-        "threshold": 94.50126,
+        "threshold": 93.77531,
         "left": {
           "type": "split",
           "feature": 8,
@@ -5532,12 +5326,12 @@ const FOREST: TreeNode[] = [
             "type": "split",
             "feature": 4,
             "featureName": "rfFreqBand",
-            "threshold": 1.0,
+            "threshold": 0.5,
             "left": {
               "type": "split",
               "feature": 2,
               "featureName": "rcs",
-              "threshold": 0.02623,
+              "threshold": 0.02126,
               "left": {
                 "type": "leaf",
                 "label": "bird"
@@ -5548,8 +5342,18 @@ const FOREST: TreeNode[] = [
               }
             },
             "right": {
-              "type": "leaf",
-              "label": "hostile_swarm"
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.03253,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_swarm"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_swarm"
+              }
             }
           },
           "right": {
@@ -5561,34 +5365,44 @@ const FOREST: TreeNode[] = [
           "type": "split",
           "feature": 5,
           "featureName": "rfStrength",
-          "threshold": 80.49523,
+          "threshold": 79.96496,
           "left": {
             "type": "split",
-            "feature": 5,
-            "featureName": "rfStrength",
-            "threshold": 58.02307,
+            "feature": 0,
+            "featureName": "speed",
+            "threshold": 19.3794,
             "left": {
               "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 19.03543,
+              "feature": 9,
+              "featureName": "distNorm",
+              "threshold": 0.22321,
               "left": {
-                "type": "leaf",
-                "label": "hostile_recon"
+                "type": "split",
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 104.08445,
+                "left": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                },
+                "right": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                }
               },
               "right": {
                 "type": "split",
-                "feature": 4,
-                "featureName": "rfFreqBand",
-                "threshold": 0.5,
+                "feature": 5,
+                "featureName": "rfStrength",
+                "threshold": 15.08151,
                 "left": {
                   "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 134.96737,
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 18.76672,
                   "left": {
                     "type": "leaf",
-                    "label": "hostile_swarm"
+                    "label": "hostile_recon"
                   },
                   "right": {
                     "type": "leaf",
@@ -5603,65 +5417,25 @@ const FOREST: TreeNode[] = [
             },
             "right": {
               "type": "split",
-              "feature": 5,
-              "featureName": "rfStrength",
-              "threshold": 58.47332,
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 100.72051,
               "left": {
                 "type": "leaf",
-                "label": "hostile_recon"
+                "label": "hostile_swarm"
               },
               "right": {
                 "type": "split",
-                "feature": 5,
-                "featureName": "rfStrength",
-                "threshold": 64.97109,
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 115.78608,
                 "left": {
-                  "type": "split",
-                  "feature": 9,
-                  "featureName": "distNorm",
-                  "threshold": 0.94011,
-                  "left": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.23132,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 18.03302,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_recon"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_recon"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  }
+                  "type": "leaf",
+                  "label": "hostile_recon"
                 },
                 "right": {
-                  "type": "split",
-                  "feature": 1,
-                  "featureName": "altitude",
-                  "threshold": 101.0943,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_recon"
-                  }
+                  "type": "leaf",
+                  "label": "hostile_recon"
                 }
               }
             }
@@ -5674,106 +5448,170 @@ const FOREST: TreeNode[] = [
       },
       "right": {
         "type": "split",
-        "feature": 5,
-        "featureName": "rfStrength",
-        "threshold": 49.99871,
+        "feature": 2,
+        "featureName": "rcs",
+        "threshold": 0.06113,
         "left": {
           "type": "split",
-          "feature": 4,
-          "featureName": "rfFreqBand",
-          "threshold": 0.5,
+          "feature": 5,
+          "featureName": "rfStrength",
+          "threshold": 50.01003,
           "left": {
             "type": "split",
             "feature": 0,
             "featureName": "speed",
-            "threshold": 27.62656,
+            "threshold": 28.16385,
             "left": {
               "type": "split",
-              "feature": 7,
-              "featureName": "acousticConf",
-              "threshold": 0.38977,
+              "feature": 1,
+              "featureName": "altitude",
+              "threshold": 122.87563,
               "left": {
                 "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 118.82029,
+                "feature": 0,
+                "featureName": "speed",
+                "threshold": 26.78058,
                 "left": {
-                  "type": "split",
-                  "feature": 6,
-                  "featureName": "eoConf",
-                  "threshold": 0.76067,
-                  "left": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.05867,
-                    "left": {
-                      "type": "split",
-                      "feature": 0,
-                      "featureName": "speed",
-                      "threshold": 27.24213,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_swarm"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
-                  }
-                },
-                "right": {
                   "type": "leaf",
                   "label": "hostile_swarm"
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 1,
-                "featureName": "altitude",
-                "threshold": 87.45169,
-                "left": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.05279,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_swarm"
-                  }
                 },
                 "right": {
                   "type": "split",
                   "feature": 9,
                   "featureName": "distNorm",
-                  "threshold": 0.66821,
+                  "threshold": 0.76556,
                   "left": {
                     "type": "split",
                     "feature": 2,
                     "featureName": "rcs",
-                    "threshold": 0.04736,
+                    "threshold": 0.05199,
                     "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.42281,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
+                    },
+                    "right": {
                       "type": "leaf",
                       "label": "hostile_swarm"
+                    }
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  }
+                }
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_recon"
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 0,
+              "featureName": "speed",
+              "threshold": 29.57924,
+              "left": {
+                "type": "split",
+                "feature": 1,
+                "featureName": "altitude",
+                "threshold": 84.18194,
+                "left": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.04232,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
+                  },
+                  "right": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 28.61471,
+                    "left": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_attack"
+                    }
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.05187,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  }
+                }
+              },
+              "right": {
+                "type": "split",
+                "feature": 9,
+                "featureName": "distNorm",
+                "threshold": 0.09858,
+                "left": {
+                  "type": "split",
+                  "feature": 2,
+                  "featureName": "rcs",
+                  "threshold": 0.05364,
+                  "left": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_attack"
+                  }
+                },
+                "right": {
+                  "type": "split",
+                  "feature": 0,
+                  "featureName": "speed",
+                  "threshold": 33.05277,
+                  "left": {
+                    "type": "split",
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.0452,
+                    "left": {
+                      "type": "split",
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.45264,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_attack"
+                      }
                     },
                     "right": {
                       "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.05659,
+                      "feature": 6,
+                      "featureName": "eoConf",
+                      "threshold": 0.63298,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_attack"
@@ -5785,142 +5623,8 @@ const FOREST: TreeNode[] = [
                     }
                   },
                   "right": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 113.72643,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  }
-                }
-              }
-            },
-            "right": {
-              "type": "split",
-              "feature": 0,
-              "featureName": "speed",
-              "threshold": 29.61954,
-              "left": {
-                "type": "split",
-                "feature": 6,
-                "featureName": "eoConf",
-                "threshold": 0.47934,
-                "left": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.04177,
-                  "left": {
                     "type": "leaf",
                     "label": "hostile_attack"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.72456,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 7,
-                  "featureName": "acousticConf",
-                  "threshold": 0.20674,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 2,
-                    "featureName": "rcs",
-                    "threshold": 0.05513,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  }
-                }
-              },
-              "right": {
-                "type": "split",
-                "feature": 0,
-                "featureName": "speed",
-                "threshold": 31.20747,
-                "left": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.05022,
-                  "left": {
-                    "type": "split",
-                    "feature": 0,
-                    "featureName": "speed",
-                    "threshold": 30.62239,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 9,
-                    "featureName": "distNorm",
-                    "threshold": 0.87089,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  }
-                },
-                "right": {
-                  "type": "split",
-                  "feature": 6,
-                  "featureName": "eoConf",
-                  "threshold": 0.58437,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.60086,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
                   }
                 }
               }
@@ -5928,58 +5632,42 @@ const FOREST: TreeNode[] = [
           },
           "right": {
             "type": "split",
-            "feature": 0,
-            "featureName": "speed",
-            "threshold": 23.87217,
-            "left": {
-              "type": "leaf",
-              "label": "hostile_recon"
-            },
-            "right": {
-              "type": "leaf",
-              "label": "hostile_attack"
-            }
-          }
-        },
-        "right": {
-          "type": "split",
-          "feature": 5,
-          "featureName": "rfStrength",
-          "threshold": 94.72773,
-          "left": {
-            "type": "split",
-            "feature": 1,
-            "featureName": "altitude",
-            "threshold": 130.75032,
+            "feature": 4,
+            "featureName": "rfFreqBand",
+            "threshold": 1.5,
             "left": {
               "type": "split",
-              "feature": 2,
-              "featureName": "rcs",
-              "threshold": 0.06085,
+              "feature": 6,
+              "featureName": "eoConf",
+              "threshold": 0.72176,
               "left": {
                 "type": "split",
-                "feature": 4,
-                "featureName": "rfFreqBand",
-                "threshold": 1.5,
+                "feature": 7,
+                "featureName": "acousticConf",
+                "threshold": 0.00776,
                 "left": {
+                  "type": "leaf",
+                  "label": "hostile_recon"
+                },
+                "right": {
                   "type": "split",
                   "feature": 1,
                   "featureName": "altitude",
-                  "threshold": 120.03431,
+                  "threshold": 122.94252,
                   "left": {
                     "type": "split",
-                    "feature": 7,
-                    "featureName": "acousticConf",
-                    "threshold": 0.40261,
+                    "feature": 2,
+                    "featureName": "rcs",
+                    "threshold": 0.03795,
                     "left": {
                       "type": "leaf",
                       "label": "hostile_attack"
                     },
                     "right": {
                       "type": "split",
-                      "feature": 2,
-                      "featureName": "rcs",
-                      "threshold": 0.04093,
+                      "feature": 7,
+                      "featureName": "acousticConf",
+                      "threshold": 0.59282,
                       "left": {
                         "type": "leaf",
                         "label": "hostile_attack"
@@ -5993,105 +5681,141 @@ const FOREST: TreeNode[] = [
                   "right": {
                     "type": "leaf",
                     "label": "hostile_attack"
+                  }
+                }
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_attack"
+              }
+            },
+            "right": {
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.02851,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_swarm"
+              },
+              "right": {
+                "type": "split",
+                "feature": 7,
+                "featureName": "acousticConf",
+                "threshold": 0.55059,
+                "left": {
+                  "type": "split",
+                  "feature": 7,
+                  "featureName": "acousticConf",
+                  "threshold": 0.54442,
+                  "left": {
+                    "type": "split",
+                    "feature": 0,
+                    "featureName": "speed",
+                    "threshold": 21.97052,
+                    "left": {
+                      "type": "split",
+                      "feature": 5,
+                      "featureName": "rfStrength",
+                      "threshold": 53.79016,
+                      "left": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      },
+                      "right": {
+                        "type": "leaf",
+                        "label": "hostile_swarm"
+                      }
+                    },
+                    "right": {
+                      "type": "leaf",
+                      "label": "hostile_swarm"
+                    }
+                  },
+                  "right": {
+                    "type": "leaf",
+                    "label": "hostile_swarm"
                   }
                 },
                 "right": {
                   "type": "leaf",
                   "label": "hostile_swarm"
                 }
-              },
-              "right": {
+              }
+            }
+          }
+        },
+        "right": {
+          "type": "split",
+          "feature": 2,
+          "featureName": "rcs",
+          "threshold": 0.06446,
+          "left": {
+            "type": "split",
+            "feature": 2,
+            "featureName": "rcs",
+            "threshold": 0.06406,
+            "left": {
+              "type": "split",
+              "feature": 4,
+              "featureName": "rfFreqBand",
+              "threshold": 1.5,
+              "left": {
                 "type": "split",
                 "feature": 0,
                 "featureName": "speed",
-                "threshold": 27.83048,
+                "threshold": 27.96034,
                 "left": {
-                  "type": "split",
-                  "feature": 2,
-                  "featureName": "rcs",
-                  "threshold": 0.06834,
-                  "left": {
-                    "type": "split",
-                    "feature": 6,
-                    "featureName": "eoConf",
-                    "threshold": 0.33716,
-                    "left": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_swarm"
-                    }
-                  },
-                  "right": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  }
+                  "type": "leaf",
+                  "label": "hostile_swarm"
                 },
                 "right": {
-                  "type": "split",
-                  "feature": 6,
-                  "featureName": "eoConf",
-                  "threshold": 0.73664,
-                  "left": {
-                    "type": "leaf",
-                    "label": "hostile_attack"
-                  },
-                  "right": {
-                    "type": "split",
-                    "feature": 1,
-                    "featureName": "altitude",
-                    "threshold": 110.05277,
-                    "left": {
-                      "type": "split",
-                      "feature": 1,
-                      "featureName": "altitude",
-                      "threshold": 71.34192,
-                      "left": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      },
-                      "right": {
-                        "type": "leaf",
-                        "label": "hostile_attack"
-                      }
-                    },
-                    "right": {
-                      "type": "leaf",
-                      "label": "hostile_attack"
-                    }
-                  }
+                  "type": "leaf",
+                  "label": "hostile_attack"
                 }
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_swarm"
               }
             },
             "right": {
               "type": "split",
               "feature": 0,
               "featureName": "speed",
-              "threshold": 20.61075,
+              "threshold": 29.74335,
               "left": {
                 "type": "leaf",
-                "label": "hostile_recon"
+                "label": "hostile_swarm"
               },
               "right": {
                 "type": "leaf",
-                "label": "hostile_recon"
+                "label": "hostile_attack"
               }
             }
           },
           "right": {
             "type": "split",
-            "feature": 0,
-            "featureName": "speed",
-            "threshold": 29.10487,
+            "feature": 9,
+            "featureName": "distNorm",
+            "threshold": 0.79745,
             "left": {
               "type": "leaf",
-              "label": "hostile_swarm"
+              "label": "hostile_attack"
             },
             "right": {
-              "type": "leaf",
-              "label": "hostile_swarm"
+              "type": "split",
+              "feature": 2,
+              "featureName": "rcs",
+              "threshold": 0.06593,
+              "left": {
+                "type": "leaf",
+                "label": "hostile_attack"
+              },
+              "right": {
+                "type": "leaf",
+                "label": "hostile_attack"
+              }
             }
           }
         }

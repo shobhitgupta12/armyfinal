@@ -221,16 +221,15 @@ FEATURE_NAMES = [
 ]
 
 
-def export_tree(estimator, feature_names):
+def export_tree(estimator, feature_names, class_names):
     """Recursively convert a sklearn DecisionTreeClassifier to a
     nested-dict format compatible with the TypeScript TreeNode type."""
     tree = estimator.tree_
-    classes = estimator.classes_
 
     def recurse(node_id):
         if tree.children_left[node_id] == -1:   # leaf
             class_idx = int(np.argmax(tree.value[node_id]))
-            return {"type": "leaf", "label": classes[class_idx]}
+            return {"type": "leaf", "label": class_names[class_idx]}
         feat = int(tree.feature[node_id])
         thresh = float(tree.threshold[node_id])
         return {
@@ -246,7 +245,31 @@ def export_tree(estimator, feature_names):
 
 
 print(f"\nExporting first {EXPORT_N_TREES} trees to scripts/forest.json …")
-exported = [export_tree(est, FEATURE_NAMES) for est in clf.estimators_[:EXPORT_N_TREES]]
+exported = [export_tree(est, FEATURE_NAMES, clf.classes_) for est in clf.estimators_[:EXPORT_N_TREES]]
+
+# Evaluate the 10-tree subset
+def predict_tree(node, features):
+    if node["type"] == "leaf":
+        return node["label"]
+    feat_idx = node["feature"]
+    if features[feat_idx] <= node["threshold"]:
+        return predict_tree(node["left"], features)
+    else:
+        return predict_tree(node["right"], features)
+
+subset_correct = 0
+for i in range(len(X_test)):
+    votes = {}
+    for tree in exported:
+        pred = predict_tree(tree, X_test[i])
+        votes[pred] = votes.get(pred, 0) + 1
+    # Find majority vote
+    best_label = max(votes, key=votes.get)
+    if best_label == y_test[i]:
+        subset_correct += 1
+
+subset_acc = subset_correct / len(X_test)
+print(f"10-tree subset accuracy: {subset_acc*100:.1f}%")
 
 with open("scripts/forest.json", "w") as f:
     json.dump(exported, f, indent=2)
@@ -254,6 +277,6 @@ with open("scripts/forest.json", "w") as f:
 print("Done. To use in the browser:")
 print("  1. Copy the content of scripts/forest.json")
 print("  2. Replace the hand-coded FOREST array in src/ai/threatClassifier.ts")
-print("  3. Update the classifier header to say 'trained on simulator-generated")
-print("     synthetic data' and quote the accuracy from scripts/metrics.txt")
-print(f"\nAchieved test accuracy: {acc*100:.1f}%")
+print(f"  3. Update the classifier header to say 'forest of 100 trees, {acc*100:.1f}%; 10-tree deployed subset {subset_acc*100:.1f}%'")
+print(f"\nAchieved full test accuracy: {acc*100:.1f}%")
+print(f"Achieved subset test accuracy: {subset_acc*100:.1f}%")
