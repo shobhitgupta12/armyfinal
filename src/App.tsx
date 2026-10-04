@@ -3,6 +3,7 @@ import { storageService, type CurrentUser } from './storage/storageService';
 import type { ScenarioConfig, SessionResult } from './types';
 import { generateProceduralScenario } from './scenarios/generator';
 import { computeAdaptiveDifficulty } from './adaptive/difficulty';
+import { getScenarioBias } from './ai/skillModel';
 import { Header } from './components/Header';
 import { HotkeysModal } from './components/HotkeysModal';
 import { TutorialModal } from './components/TutorialModal';
@@ -46,12 +47,26 @@ export function App() {
     const currentDiff = profiles.find((p) => p.name === currentUser.name)?.currentDifficulty ?? 3;
     const adaptiveRec = computeAdaptiveDifficulty(userSessions, currentDiff);
 
+    // --- BKT Skill Model bias ---
+    const skillState = storageService.getSkillModel(currentUser.name);
+    const bias = getScenarioBias(skillState);
+
     const sc = generateProceduralScenario({
       seed: Math.floor(Math.random() * 899999) + 100000,
-      difficulty: adaptiveRec.nextDifficulty,
+      difficulty: Math.max(1, Math.min(10, adaptiveRec.nextDifficulty + bias.difficultyAdjust)),
     });
 
-    setSelectedScenario(sc);
+    // Merge BKT scenario hints into the generated scenario
+    const scenarioWithBias: ScenarioConfig = {
+      ...sc,
+      hints: [
+        ...(sc.hints ?? []),
+        ...bias.hints,
+        skillState.focusRationale,
+      ],
+    };
+
+    setSelectedScenario(scenarioWithBias);
     setCurrentScreen('simulator');
   };
 

@@ -13,6 +13,7 @@ import {
   createInitialSensorState,
   updateSensorData,
 } from './sensors';
+import { patchWaveWithAdversaryAdaptation } from '../ai/adaptiveAdversary';
 
 export interface SimulationState {
   simTime: number; // seconds
@@ -32,6 +33,8 @@ export interface SimulationState {
   lastReplayLogTime: number;
   scenario: ScenarioConfig;
   eventsLog: Array<{ id: string; time: number; text: string; type: 'info' | 'warn' | 'alert' | 'success' }>;
+  /** Wave indices that have already had adversary adaptation applied */
+  adaptedWaveIndices: Set<number>;
 }
 
 export function createSimulationEngine(scenario: ScenarioConfig): SimulationState {
@@ -97,6 +100,7 @@ export function createSimulationEngine(scenario: ScenarioConfig): SimulationStat
     replayFrames: [],
     lastReplayLogTime: 0,
     scenario,
+    adaptedWaveIndices: new Set<number>(),
     eventsLog: [
       {
         id: 'evt-init',
@@ -123,10 +127,49 @@ export function tickSimulation(
   let assetHealth = state.assetHealth;
   const eventsLog = [...state.eventsLog];
 
+  // --- Adaptive Adversary: patch waves that are about to spawn ---
+  // We check each wave. If it hasn't been adapted yet AND it spawns within
+  // the next 5 s, we apply habit-based mutation once.
+  const adaptedWaveIndices = new Set(state.adaptedWaveIndices);
+  let patchedScenario = state.scenario;
+
+  state.scenario.waves.forEach((wave, waveIdx) => {
+    if (
+      !adaptedWaveIndices.has(waveIdx) &&
+      wave.startTime > 0 && // don't adapt wave 0 (no prior data)
+      simTime >= wave.startTime - 5 &&
+      simTime < wave.startTime
+    ) {
+      const { patchedWaves, adaptationLog } = patchWaveWithAdversaryAdaptation(
+        [...patchedScenario.waves],
+        state.actionRecords,
+        waveIdx
+      );
+
+      patchedScenario = { ...patchedScenario, waves: patchedWaves };
+      adaptedWaveIndices.add(waveIdx);
+
+      if (adaptationLog && !adaptationLog.includes('Insufficient')) {
+        eventsLog.push({
+          id: `evt-adversary-adapt-${waveIdx}-${simTime}`,
+          time: Math.round(simTime),
+          text: `[AI ADVERSARY] ${adaptationLog.split('\n')[0]}`,
+          type: 'warn',
+        });
+      }
+    }
+  });
+
   const updatedEntities = state.entities.map((entity) => {
     if (simTime < entity.spawnTime) return entity; // Not spawned yet
 
-    const updated = updateEntityPhysics(entity, deltaTime, simTime);
+    const updated = updateEntityPhysics(
+      entity,
+      deltaTime,
+      simTime,
+      undefined,
+      state.entities.filter((e) => e.active && e.status === 'active')
+    );
 
     // Check impact
     if (updated.status === 'impacted' && entity.status === 'active') {
@@ -216,6 +259,8 @@ export function tickSimulation(
     lastReplayLogTime,
     eventsLog,
     isCompleted,
+    scenario: patchedScenario,
+    adaptedWaveIndices,
   };
 }
 

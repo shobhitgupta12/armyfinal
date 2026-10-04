@@ -1,0 +1,21 @@
+
+C-UAS Threat Classifier — Evaluation Metrics
+=============================================
+Training samples : 8001
+Test samples     : 2001
+Test accuracy    : 0.991  (99.1%)
+
+Per-class report (on held-out 20% test split):
+                precision    recall  f1-score   support
+
+          bird      1.000     1.000     1.000       333
+      civilian      1.000     1.000     1.000       333
+      friendly      1.000     1.000     1.000       334
+hostile_attack      0.971     0.997     0.984       334
+ hostile_recon      0.991     0.988     0.990       334
+ hostile_swarm      0.985     0.961     0.973       333
+
+      accuracy                          0.991      2001
+     macro avg      0.991     0.991     0.991      2001
+  weighted avg      0.991     0.991     0.991      2001
+

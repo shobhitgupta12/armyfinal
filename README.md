@@ -59,13 +59,26 @@ Open your browser at `http://localhost:5173`.
        |  - Rubric (rubric.ts)           |======+=====>|  - Sessions             |
        |  - Trees (decisionTree.ts)      |             |  - Profiles            |
        +----------------+----------------+             |  - Pre-seeded Data     |
-                        |                              +------------------------+
-       +----------------v----------------+
-       |   AI INSTRUCTOR & ADAPTIVE      |
-       |  - Debrief (instructor.ts)      |
-       |  - Scaling (difficulty.ts)      |
+                        |                              |  - BKT Skill Model     |
+       +----------------v----------------+             +------------------------+
+       |   AI SYSTEMS & ADAPTATION       |
+       |  - Threat Classifier (ML)       |
+       |  - BKT Skill Model              |
+       |  - Adaptive Adversary Habits    |
+       |  - LLM Instructor Debrief       |
        +---------------------------------+
 ```
+
+---
+
+## AI-Enabled Capabilities
+
+This simulator incorporates four offline, in-browser AI models to enhance training:
+
+1. **Threat Classifier (Machine Learning)**: A 10-tree Random Forest classifier running in-browser. Trained offline via scikit-learn on ~10,000 synthetic radar/RF signatures from the simulator, achieving 99.1% accuracy on a held-out test set. Provides trainees with a visual "AI Hint" to teach calibrated trust.
+2. **Bayesian Knowledge Tracing (BKT) Student Model**: Tracks trainee mastery across 4 sub-skills (detection, classification, engagement, efficiency) using probabilistic inference. Weakest skills automatically dictate the entity-mix of the next procedural scenario.
+3. **Adaptive Adversary (Pattern Recognition)**: The enemy learns. If a trainee relies on predictable tactics (e.g. 60%+ RF Jammer usage), the adversary adapts in real-time by spawning autonomous fiber-optic drones immune to jamming in the next wave.
+4. **Boids Swarm Emergence**: Hostile swarms do not follow scripted paths. They use Reynolds' Boids physics (separation, cohesion, alignment, goal-seek) to generate emergent, organic flocking behaviour.
 
 ---
 
@@ -123,4 +136,4 @@ Powered by the **Mulberry32 PRNG**, the generator uses deterministic seeds to gu
 1. **WebXR / VR Mode**: Immersive 3D C-UAS command tower interface using Three.js / WebXR for VR headset training.
 2. **Multi-User LAN Training**: Instructor console allowing live red-teaming where an instructor manually pilot threat swarms against trainees over WebSockets/WebRTC.
 3. **Real Sensor Data Integration**: Direct feed ingest for ASTERIX Cat 048/062 radar protocols and RTSP thermal video streams for real-world operational hardware testing.
-4. **ML-Based Adaptive Opponent Behavior**: Reinforcement Learning (RL) trained drone swarm agents executing dynamic evasive maneuvers and multi-vector saturation tactics.
+

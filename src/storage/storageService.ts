@@ -1,11 +1,17 @@
 import type { SessionResult, TraineeProfile } from '../types';
 import { generateFeedback } from '../ai/instructor';
+import {
+  type SkillModelState,
+  buildSkillModelFromHistory,
+  updateSkillModel,
+} from '../ai/skillModel';
 
 const STORAGE_KEYS = {
   CURRENT_USER: 'cuas_current_user',
   SESSIONS: 'cuas_session_history',
   PROFILES: 'cuas_trainee_profiles',
   API_KEY: 'cuas_llm_api_key',
+  SKILL_MODEL: 'cuas_skill_model',
 };
 
 export interface CurrentUser {
@@ -177,13 +183,22 @@ export const storageService = {
 
     profile.sessionsCount += 1;
     profile.topScore = Math.max(profile.topScore, session.finalScore);
+    profile.avgScore = Math.round(
+      (profile.avgScore * (profile.sessionsCount - 1) + session.finalScore) / profile.sessionsCount
+    );
 
-    // Compute rolling averages
-    profile.avgScore = Math.round((profile.avgScore * (profile.sessionsCount - 1) + session.finalScore) / profile.sessionsCount);
-    profile.skillProfile.detection = Math.round((profile.skillProfile.detection * (profile.sessionsCount - 1) + session.subScores.detection) / profile.sessionsCount);
-    profile.skillProfile.classification = Math.round((profile.skillProfile.classification * (profile.sessionsCount - 1) + session.subScores.classification) / profile.sessionsCount);
-    profile.skillProfile.engagement = Math.round((profile.skillProfile.engagement * (profile.sessionsCount - 1) + session.subScores.engagement) / profile.sessionsCount);
-    profile.skillProfile.efficiency = Math.round((profile.skillProfile.efficiency * (profile.sessionsCount - 1) + session.subScores.efficiency) / profile.sessionsCount);
+    // --- BKT skill model update (replaces simple rolling average) ---
+    const skillState = this.getSkillModel(session.traineeName);
+    const updatedSkillState = updateSkillModel(skillState, session);
+    this.saveSkillModel(session.traineeName, updatedSkillState);
+
+    // Expose BKT mastery probabilities as the profile skill percentages
+    profile.skillProfile = {
+      detection: Math.round(updatedSkillState.skills.detection.pMastery * 100),
+      classification: Math.round(updatedSkillState.skills.classification.pMastery * 100),
+      engagement: Math.round(updatedSkillState.skills.engagement.pMastery * 100),
+      efficiency: Math.round(updatedSkillState.skills.efficiency.pMastery * 100),
+    };
 
     localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(profiles));
   },
@@ -191,6 +206,7 @@ export const storageService = {
   resetDemoData(): void {
     localStorage.removeItem(STORAGE_KEYS.SESSIONS);
     localStorage.removeItem(STORAGE_KEYS.PROFILES);
+    localStorage.removeItem(STORAGE_KEYS.SKILL_MODEL);
     this.getSessions();
     this.getProfiles();
   },
@@ -201,5 +217,31 @@ export const storageService = {
 
   setLLMApiKey(key: string): void {
     localStorage.setItem(STORAGE_KEYS.API_KEY, key);
+  },
+
+  /**
+   * Returns the BKT skill model for a specific trainee.
+   * If no model exists, build one from their session history.
+   */
+  getSkillModel(traineeName: string): SkillModelState {
+    try {
+      const raw = localStorage.getItem(`${STORAGE_KEYS.SKILL_MODEL}_${traineeName}`);
+      if (raw) return JSON.parse(raw) as SkillModelState;
+    } catch (_) {}
+
+    // Cold start: reconstruct from history
+    const sessions = this.getSessions().filter((s) => s.traineeName === traineeName);
+    const state = buildSkillModelFromHistory(sessions);
+    this.saveSkillModel(traineeName, state);
+    return state;
+  },
+
+  saveSkillModel(traineeName: string, state: SkillModelState): void {
+    try {
+      localStorage.setItem(
+        `${STORAGE_KEYS.SKILL_MODEL}_${traineeName}`,
+        JSON.stringify(state)
+      );
+    } catch (_) {}
   },
 };
